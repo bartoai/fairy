@@ -187,7 +187,7 @@
         /* Character model container */
         .character-container {
             position: absolute;
-            bottom: 220px;
+            bottom: 290px; /* Adjusted for taller text box */
             left: 50%;
             transform: translateX(-50%);
             width: 1700px;
@@ -222,7 +222,7 @@
             transform: translateX(-50%);
             width: 90%;
             max-width: 1200px;
-            height: 180px;
+            height: 250px; /* Increased from 180px to 250px */
             background: rgba(0, 0, 0, 0.95);
             border: 2px solid #333;
             border-radius: 8px;
@@ -824,10 +824,16 @@
             const message = messageInput.value.trim();
             if (!message) return;
 
+            // Play send sound effect
+            playSound('messageSend');
+
             addMessage(message, 'user');
             messageInput.value = '';
             sendButton.disabled = true;
             sendButton.innerHTML = 'Sending<span class="loading-dots"></span>';
+
+            // Show typing indicator
+            showTypingIndicator();
 
             try {
                 const response = await fetch('/api/chat', {
@@ -846,7 +852,13 @@
                 }
 
                 const data = await response.json();
+                
+                // Hide typing indicator and add response
+                hideTypingIndicator();
                 addMessage(data.response, 'fairy');
+                
+                // Play received sound effect
+                playSound('messageReceived');
             } catch (error) {
                 console.error('API Error:', error);
                 const fallbackResponses = [
@@ -858,16 +870,36 @@
                 ];
                 
                 const randomResponse = fallbackResponses[Math.floor(Math.random() * fallbackResponses.length)];
+                hideTypingIndicator();
                 addMessage(randomResponse, 'fairy');
+                playSound('messageReceived');
             }
 
             sendButton.disabled = false;
             sendButton.innerHTML = 'Send';
         }
 
+        function showTypingIndicator() {
+            const typingDiv = document.createElement('div');
+            typingDiv.className = 'typing-indicator';
+            typingDiv.id = 'typingIndicator';
+            typingDiv.innerHTML = 'Bonkara is typing<span class="typing-dots">...</span>';
+            dialogueText.appendChild(typingDiv);
+            dialogueText.scrollTop = dialogueText.scrollHeight;
+        }
+
+        function hideTypingIndicator() {
+            const typingIndicator = document.getElementById('typingIndicator');
+            if (typingIndicator) {
+                typingIndicator.remove();
+            }
+        }
+
         function addMessage(text, sender) {
             const messageDiv = document.createElement('div');
             messageDiv.className = `message ${sender}`;
+            const messageId = ++messageCounter;
+            messageDiv.dataset.messageId = messageId;
             
             if (sender === 'fairy') {
                 const voiceButton = document.createElement('button');
@@ -875,6 +907,27 @@
                 voiceButton.textContent = '🔊';
                 voiceButton.onclick = () => playVoice(text, voiceButton);
                 messageDiv.appendChild(voiceButton);
+                
+                // Add reaction buttons
+                const reactionContainer = document.createElement('div');
+                reactionContainer.className = 'reaction-buttons';
+                
+                const reactions = ['❤️', '😍', '🔥', '😱', '😂'];
+                reactions.forEach(emoji => {
+                    const reactionBtn = document.createElement('button');
+                    reactionBtn.className = 'reaction-btn';
+                    reactionBtn.textContent = emoji;
+                    reactionBtn.onclick = () => addReaction(messageId, emoji);
+                    reactionContainer.appendChild(reactionBtn);
+                });
+                
+                messageDiv.appendChild(reactionContainer);
+                
+                // Add reactions display area
+                const reactionsDisplay = document.createElement('div');
+                reactionsDisplay.className = 'user-reactions';
+                reactionsDisplay.id = `reactions-${messageId}`;
+                messageDiv.appendChild(reactionsDisplay);
                 
                 dialogueText.appendChild(messageDiv);
                 
@@ -891,6 +944,39 @@
             }
             
             dialogueText.scrollTop = dialogueText.scrollHeight;
+        }
+
+        function addReaction(messageId, emoji) {
+            // Play reaction sound
+            playSound('reaction');
+            
+            // Initialize reactions for this message if not exists
+            if (!messageReactions.has(messageId)) {
+                messageReactions.set(messageId, new Map());
+            }
+            
+            const messageReactionMap = messageReactions.get(messageId);
+            const currentCount = messageReactionMap.get(emoji) || 0;
+            messageReactionMap.set(emoji, currentCount + 1);
+            
+            // Update display
+            updateReactionsDisplay(messageId);
+        }
+
+        function updateReactionsDisplay(messageId) {
+            const reactionsDisplay = document.getElementById(`reactions-${messageId}`);
+            const messageReactionMap = messageReactions.get(messageId);
+            
+            if (!reactionsDisplay || !messageReactionMap) return;
+            
+            let html = '';
+            messageReactionMap.forEach((count, emoji) => {
+                if (count > 0) {
+                    html += `<span class="reaction-count">${emoji} ${count}</span>`;
+                }
+            });
+            
+            reactionsDisplay.innerHTML = html;
         }
 
         async function prepareAndPlayTogether(element, text) {
