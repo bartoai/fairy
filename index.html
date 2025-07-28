@@ -421,6 +421,42 @@
             border-bottom-color: #00ff00;
         }
 
+        .mic-button {
+            background: transparent;
+            border: 1px solid #333;
+            color: #00ff00;
+            padding: 6px 10px;
+            font-family: 'Courier Prime', monospace;
+            font-size: 16px;
+            cursor: pointer;
+            border-radius: 4px;
+            transition: all 0.3s ease;
+            min-width: 40px;
+        }
+
+        .mic-button:hover:not(:disabled) {
+            background: rgba(0, 255, 0, 0.1);
+            border-color: #00ff00;
+        }
+
+        .mic-button:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .mic-button.recording {
+            background: rgba(255, 0, 0, 0.2);
+            border-color: #ff0000;
+            color: #ff0000;
+            animation: pulse 1s infinite;
+        }
+
+        .mic-button.processing {
+            background: rgba(255, 255, 0, 0.2);
+            border-color: #ffff00;
+            color: #ffff00;
+        }
+
         .send-button {
             background: transparent;
             border: 1px solid #333;
@@ -556,6 +592,7 @@
             <div class="input-container">
                 <span class="input-prompt">></span>
                 <input type="text" class="message-input" id="messageInput" placeholder="Type your message..." maxlength="500">
+                <button class="mic-button" id="micButton" onclick="toggleSpeechRecognition()" title="Click to speak">🎤</button>
                 <button class="send-button" id="sendButton" onclick="sendMessage()">Send</button>
             </div>
         </div>
@@ -568,11 +605,14 @@
         let backgroundMusic = null;
         let messageReactions = new Map(); // Store reactions for each message
         let messageCounter = 0; // Unique ID for each message
+        let speechRecognition = null;
+        let isRecording = false;
         const canvas = document.getElementById('characterCanvas');
         const loadingDiv = document.getElementById('characterLoading');
         const dialogueText = document.getElementById('dialogueText');
         const messageInput = document.getElementById('messageInput');
         const sendButton = document.getElementById('sendButton');
+        const micButton = document.getElementById('micButton');
 
         // Sound effects
         const soundEffects = {
@@ -617,8 +657,69 @@
             // Initialize sound effects
             initSoundEffects();
             
+            // Initialize speech recognition
+            initSpeechRecognition();
+            
             // Start loading model immediately instead of waiting
             initThreeJS();
+        }
+
+        // Speech recognition setup
+        function initSpeechRecognition() {
+            if ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window) {
+                const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+                speechRecognition = new SpeechRecognition();
+                
+                speechRecognition.continuous = false;
+                speechRecognition.interimResults = false;
+                speechRecognition.lang = 'en-US';
+                
+                speechRecognition.onstart = function() {
+                    isRecording = true;
+                    micButton.className = 'mic-button recording';
+                    micButton.textContent = '🔴';
+                    console.log('Speech recognition started');
+                };
+                
+                speechRecognition.onresult = function(event) {
+                    const transcript = event.results[0][0].transcript;
+                    messageInput.value = transcript;
+                    console.log('Speech recognized:', transcript);
+                };
+                
+                speechRecognition.onerror = function(event) {
+                    console.error('Speech recognition error:', event.error);
+                    resetMicButton();
+                };
+                
+                speechRecognition.onend = function() {
+                    resetMicButton();
+                    // Auto-send the message if we got text
+                    if (messageInput.value.trim()) {
+                        sendMessage();
+                    }
+                };
+            } else {
+                // Hide mic button if not supported
+                micButton.style.display = 'none';
+                console.log('Speech recognition not supported');
+            }
+        }
+
+        function toggleSpeechRecognition() {
+            if (!speechRecognition) return;
+            
+            if (isRecording) {
+                speechRecognition.stop();
+            } else {
+                speechRecognition.start();
+            }
+        }
+
+        function resetMicButton() {
+            isRecording = false;
+            micButton.className = 'mic-button';
+            micButton.textContent = '🎤';
         }
 
         // Background music function
