@@ -4,6 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Chat with Luna the Fairy</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/loaders/GLTFLoader.js"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&display=swap');
         
@@ -51,7 +53,15 @@
             overflow: hidden;
         }
 
-        .model-placeholder {
+        .model-canvas {
+            width: 100%;
+            height: 100%;
+            border-radius: 15px;
+            overflow: hidden;
+            display: none; /* Hidden until model loads */
+        }
+
+        .loading-message {
             width: 100%;
             height: 100%;
             display: flex;
@@ -63,6 +73,8 @@
             color: #3b82f6;
             font-size: 18px;
             text-align: center;
+            flex-direction: column;
+            gap: 10px;
         }
 
         .chat-section {
@@ -265,10 +277,10 @@
     <div class="container">
         <div class="model-section">
             <div class="model-container">
-                <div class="model-placeholder">
-                    ✨ Your 3D Fairy Model Will Appear Here ✨
-                    <br><br>
-                    (GLB model will be positioned to show upper half only)
+                <canvas id="modelCanvas" class="model-canvas"></canvas>
+                <div id="loadingMessage" class="loading-message">
+                    <div>✨ Loading Luna the Fairy ✨</div>
+                    <div class="loading"></div>
                 </div>
             </div>
         </div>
@@ -306,6 +318,136 @@
     </div>
 
     <script>
+        // Three.js setup for GLB model
+        let scene, camera, renderer, fairy;
+        const canvas = document.getElementById('modelCanvas');
+        const loadingMessage = document.getElementById('loadingMessage');
+
+        function initThreeJS() {
+            // Scene setup
+            scene = new THREE.Scene();
+            scene.background = new THREE.Color(0xf0f8ff); // Light blue background
+
+            // Camera setup for webcam-like view
+            camera = new THREE.PerspectiveCamera(50, canvas.clientWidth / canvas.clientHeight, 0.1, 1000);
+            camera.position.set(0, 1.5, 3); // Position to show upper half
+            camera.lookAt(0, 1.5, 0);
+
+            // Renderer setup
+            renderer = new THREE.WebGLRenderer({ 
+                canvas: canvas, 
+                antialias: true, 
+                alpha: true 
+            });
+            renderer.setSize(canvas.clientWidth, canvas.clientHeight);
+            renderer.setPixelRatio(window.devicePixelRatio);
+            renderer.shadowMap.enabled = true;
+            renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+
+            // Lighting setup
+            const ambientLight = new THREE.AmbientLight(0xffffff, 0.6);
+            scene.add(ambientLight);
+
+            const directionalLight = new THREE.DirectionalLight(0xffffff, 0.8);
+            directionalLight.position.set(5, 10, 5);
+            directionalLight.castShadow = true;
+            directionalLight.shadow.mapSize.width = 2048;
+            directionalLight.shadow.mapSize.height = 2048;
+            scene.add(directionalLight);
+
+            // Soft fill light from the front
+            const fillLight = new THREE.DirectionalLight(0x87ceeb, 0.4);
+            fillLight.position.set(0, 0, 5);
+            scene.add(fillLight);
+
+            // Load the GLB model
+            loadFairyModel();
+        }
+
+        function loadFairyModel() {
+            const loader = new THREE.GLTFLoader();
+            const modelUrl = 'https://raw.githubusercontent.com/bartoai/fairy/main/fairywoman.glb';
+            
+            loader.load(
+                modelUrl,
+                function(gltf) {
+                    fairy = gltf.scene;
+                    
+                    // Scale and position the model
+                    fairy.scale.set(1, 1, 1);
+                    fairy.position.set(0, 0, 0);
+                    
+                    // Enable shadows
+                    fairy.traverse(function(child) {
+                        if (child.isMesh) {
+                            child.castShadow = true;
+                            child.receiveShadow = true;
+                        }
+                    });
+                    
+                    scene.add(fairy);
+                    
+                    // Hide loading message and show canvas
+                    loadingMessage.style.display = 'none';
+                    canvas.style.display = 'block';
+                    
+                    // Start animation if available
+                    if (gltf.animations && gltf.animations.length > 0) {
+                        const mixer = new THREE.AnimationMixer(fairy);
+                        const action = mixer.clipAction(gltf.animations[0]);
+                        action.play();
+                        
+                        // Animation loop
+                        function animateModel() {
+                            requestAnimationFrame(animateModel);
+                            mixer.update(0.01);
+                            renderer.render(scene, camera);
+                        }
+                        animateModel();
+                    } else {
+                        // Static render loop
+                        animate();
+                    }
+                },
+                function(progress) {
+                    console.log('Loading progress:', (progress.loaded / progress.total * 100) + '%');
+                },
+                function(error) {
+                    console.error('Error loading model:', error);
+                    loadingMessage.innerHTML = `
+                        <div>❌ Failed to load fairy model</div>
+                        <div style="font-size: 14px; margin-top: 10px;">
+                            Please check if fairywoman.glb exists in your repo
+                        </div>
+                    `;
+                }
+            );
+        }
+
+        function animate() {
+            requestAnimationFrame(animate);
+            
+            // Gentle rotation animation
+            if (fairy) {
+                fairy.rotation.y += 0.002;
+            }
+            
+            renderer.render(scene, camera);
+        }
+
+        // Handle window resize
+        function onWindowResize() {
+            const container = canvas.parentElement;
+            camera.aspect = container.clientWidth / container.clientHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(container.clientWidth, container.clientHeight);
+        }
+
+        window.addEventListener('resize', onWindowResize);
+
+        // Initialize Three.js when page loads
+        window.addEventListener('load', initThreeJS);
+
         // Add sparkle effects
         function createSparkle() {
             const sparkle = document.createElement('div');
