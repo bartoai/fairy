@@ -505,6 +505,7 @@
         // Global variables
         let scene, camera, renderer, fairy, mixer;
         let audioAutoPlay = false;
+        let backgroundMusic = null;
         const canvas = document.getElementById('characterCanvas');
         const loadingDiv = document.getElementById('characterLoading');
         const dialogueText = document.getElementById('dialogueText');
@@ -521,7 +522,63 @@
             loadingScreen.classList.add('hidden');
             mainContent.classList.add('visible');
             
+            // Start background music
+            startBackgroundMusic();
+            
             setTimeout(initThreeJS, 500);
+        }
+
+        // Background music function
+        function startBackgroundMusic() {
+            try {
+                // Load background music from your GitHub repo
+                backgroundMusic = new Audio('https://cdn.jsdelivr.net/gh/bartoai/fairy@main/background-music.mp3');
+                backgroundMusic.loop = true;
+                backgroundMusic.volume = 0.3; // Quiet volume (30%)
+                
+                // Try to play the background music
+                backgroundMusic.play().catch(error => {
+                    console.log('Background music autoplay blocked:', error);
+                    // Fallback: show a small play button for background music
+                    createMusicToggle();
+                });
+            } catch (error) {
+                console.log('Background music failed to load:', error);
+            }
+        }
+
+        // Create music toggle button if autoplay fails
+        function createMusicToggle() {
+            const musicButton = document.createElement('button');
+            musicButton.innerHTML = '🎵';
+            musicButton.style.cssText = `
+                position: fixed;
+                top: 20px;
+                right: 120px;
+                z-index: 15;
+                background: rgba(0, 0, 0, 0.8);
+                border: 1px solid #00ff00;
+                color: #00ff00;
+                padding: 8px 12px;
+                border-radius: 5px;
+                cursor: pointer;
+                font-size: 16px;
+            `;
+            
+            let musicPlaying = false;
+            musicButton.onclick = () => {
+                if (!musicPlaying) {
+                    backgroundMusic.play();
+                    musicButton.innerHTML = '🔇';
+                    musicPlaying = true;
+                } else {
+                    backgroundMusic.pause();
+                    musicButton.innerHTML = '🎵';
+                    musicPlaying = false;
+                }
+            };
+            
+            document.body.appendChild(musicButton);
         }
 
         // Three.js setup
