@@ -325,12 +325,65 @@
 
         .typing-indicator {
             color: #00ff00;
-            animation: blink 1s infinite;
+            font-style: italic;
+            margin-bottom: 15px;
+            padding: 8px 0;
         }
 
-        @keyframes blink {
-            0%, 50% { opacity: 1; }
-            51%, 100% { opacity: 0; }
+        .typing-dots {
+            display: inline-block;
+            animation: typingDots 1.5s infinite;
+        }
+
+        @keyframes typingDots {
+            0%, 20% { content: '.'; }
+            40% { content: '..'; }
+            60%, 100% { content: '...'; }
+        }
+
+        .reaction-buttons {
+            position: absolute;
+            right: 50px;
+            top: 8px;
+            display: flex;
+            gap: 5px;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .message.fairy:hover .reaction-buttons {
+            opacity: 1;
+        }
+
+        .reaction-btn {
+            background: transparent;
+            border: 1px solid #333;
+            color: #fff;
+            padding: 2px 6px;
+            font-size: 12px;
+            cursor: pointer;
+            border-radius: 3px;
+            transition: all 0.3s ease;
+        }
+
+        .reaction-btn:hover {
+            background: rgba(0, 255, 0, 0.1);
+            border-color: #00ff00;
+        }
+
+        .user-reactions {
+            margin-top: 5px;
+            font-size: 12px;
+            color: #888;
+        }
+
+        .reaction-count {
+            display: inline-block;
+            margin-right: 10px;
+            padding: 2px 6px;
+            background: rgba(0, 255, 0, 0.1);
+            border-radius: 3px;
+            border: 1px solid #333;
         }
 
         .input-container {
@@ -506,11 +559,40 @@
         let scene, camera, renderer, fairy, mixer;
         let audioAutoPlay = false;
         let backgroundMusic = null;
+        let messageReactions = new Map(); // Store reactions for each message
+        let messageCounter = 0; // Unique ID for each message
         const canvas = document.getElementById('characterCanvas');
         const loadingDiv = document.getElementById('characterLoading');
         const dialogueText = document.getElementById('dialogueText');
         const messageInput = document.getElementById('messageInput');
         const sendButton = document.getElementById('sendButton');
+
+        // Sound effects
+        const soundEffects = {
+            messageSend: null,
+            messageReceived: null,
+            reaction: null
+        };
+
+        // Initialize sound effects
+        function initSoundEffects() {
+            // Using free sound URLs - you can replace with your own hosted sounds
+            soundEffects.messageSend = new Audio('data:audio/wav;base64,UklGRnoGAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YQoGAACBhYqFbF1fdJivrJBhNjVgodDbq2EcBj+a2/LDciUFLIHO8tiJNwgZaLvt559NEAxQp+PwtmMcBjiR1/LMeSwFJHfH8N2QQAoUXrTp66hVFApGn+DyvmESBjuR2O/TeSsFJHfH8N2QQAoUXrTp66hVFApGn+DyvmESBjuR2O/TeSsFJHfH8N2QQAoUXrTp66hVFApGn+DyvmESBjuR2O/TeSsFJHfH8N2QQAoUXrTp66hVFApGn+DyvmESBjuR2O/TeSsFJHfH8N2QQAoUXrTp66hVFApGn+DyvmESBjuR2O/TeSsFJHfH8N2QQAoUXrTp66hVFA==');
+            soundEffects.messageReceived = new Audio('data:audio/wav;base64,UklGRnoGAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YQoGAACBhYqFbF1fdJivrJBhNjVgodDbq2EcBj+a2/LDciUFLIHO8tiJNwgZaLvt559NEAxQp+PwtmMcBjiR1/LMeSwFJHfH8N2QQAoUXrTp66hVFApGn+DyvmESBjuR2O/TeSsFJHfH8N2QQAoUXrTp66hVFApGn+DyvmESBjuR2O/TeSsFJHfH8N2QQAoUXrTp66hVFApGn+DyvmESBjuR2O/TeSsFJHfH8N2QQAoUXrTp66hVFApGn+DyvmESBjuR2O/TeSsFJHfH8N2QQAoUXrTp66hVFApGn+DyvmESBjuR2O/TeSsFJHfH8N2QQAoUXrTp66hVFA==');
+            soundEffects.reaction = new Audio('data:audio/wav;base64,UklGRnoGAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YQoGAACBhYqFbF1fdJivrJBhNjVgodDbq2EcBj+a2/LDciUFLIHO8tiJNwgZaLvt559NEAxQp+PwtmMcBjiR1/LMeSwFJHfH8N2QQAoUXrTp66hVFApGn+DyvmESBjuR2O/TeSsFJHfH8N2QQAoUXrTp66hVFApGn+DyvmESBjuR2O/TeSsFJHfH8N2QQAoUXrTp66hVFApGn+DyvmESBjuR2O/TeSsFJHfH8N2QQAoUXrTp66hVFApGn+DyvmESBjuR2O/TeSsFJHfH8N2QQAoUXrTp66hVFApGn+DyvmESBjuR2O/TeSsFJHfH8N2QQAoUXrTp66hVFA==');
+            
+            // Set volume for sound effects
+            Object.values(soundEffects).forEach(sound => {
+                if (sound) sound.volume = 0.3;
+            });
+        }
+
+        function playSound(soundName) {
+            if (soundEffects[soundName]) {
+                soundEffects[soundName].currentTime = 0;
+                soundEffects[soundName].play().catch(e => console.log('Sound play failed:', e));
+            }
+        }
 
         // Enter site function
         function enterSite() {
@@ -524,6 +606,9 @@
             
             // Start background music
             startBackgroundMusic();
+            
+            // Initialize sound effects
+            initSoundEffects();
             
             // Start loading model immediately instead of waiting
             initThreeJS();
