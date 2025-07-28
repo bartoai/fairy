@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Chat with Luna the Fairy</title>
+    <title>Chat with Bonkara</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/GLTFLoader.js"></script>
     <style>
@@ -331,10 +331,10 @@
 
     <!-- Text Box -->
     <div class="text-box">
-        <div class="character-name">Luna the Fairy</div>
+        <div class="character-name">Bonkara</div>
         <div class="dialogue-text" id="dialogueText">
             <div class="message fairy">
-                Welcome to my magical realm! ✨ I'm Luna, and I've been waiting for someone like you to visit. 
+                Welcome to my magical realm! I'm Bonkara, and I've been waiting for someone like you to visit. 
                 The forest spirits whisper that you have questions burning in your heart. What brings you to my domain today?
             </div>
         </div>
@@ -501,26 +501,71 @@
         function addMessage(text, sender) {
             const messageDiv = document.createElement('div');
             messageDiv.className = `message ${sender}`;
-            messageDiv.textContent = text;
             
-            dialogueText.appendChild(messageDiv);
+            if (sender === 'fairy') {
+                // Add typing effect for fairy messages
+                dialogueText.appendChild(messageDiv);
+                typeMessage(messageDiv, text);
+            } else {
+                // User messages appear immediately
+                messageDiv.textContent = text;
+                dialogueText.appendChild(messageDiv);
+            }
+            
             dialogueText.scrollTop = dialogueText.scrollHeight;
+        }
+
+        function typeMessage(element, text, speed = 30) {
+            let i = 0;
+            element.textContent = '';
+            
+            function typeChar() {
+                if (i < text.length) {
+                    element.textContent += text.charAt(i);
+                    i++;
+                    dialogueText.scrollTop = dialogueText.scrollHeight;
+                    setTimeout(typeChar, speed);
+                }
+            }
+            
+            typeChar();
         }
 
         // Simulate API response (replace with actual Anthropic integration)
         async function simulateAPICall(userMessage) {
-            await new Promise(resolve => setTimeout(resolve, 1500));
-            
-            const responses = [
-                "*Luna's wings shimmer softly* How fascinating! The ancient trees have been whispering about visitors like you...",
-                "*She tilts her head curiously* That question carries the scent of adventure! In my realm, such thoughts bloom into magical possibilities.",
-                "*Sparkles dance around Luna* Oh my! You remind me of the wise spirits who dwell beyond the crystal caves.",
-                "*Her eyes gleam with otherworldly knowledge* The moonlight reveals that you seek something deeper than words can express.",
-                "*Luna gestures gracefully* Your energy resonates with the harmony of the enchanted grove. Tell me more, dear wanderer!"
-            ];
-            
-            const randomResponse = responses[Math.floor(Math.random() * responses.length)];
-            addMessage(randomResponse, 'fairy');
+            // Replace this with actual API call
+            try {
+                const response = await fetch('/api/chat', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        message: userMessage,
+                        character: 'bonkara'
+                    })
+                });
+
+                if (!response.ok) {
+                    throw new Error('API request failed');
+                }
+
+                const data = await response.json();
+                addMessage(data.response, 'fairy');
+            } catch (error) {
+                console.error('API Error:', error);
+                // Fallback responses
+                const fallbackResponses = [
+                    "How fascinating! The ancient trees have been whispering about visitors like you. There's something special about your energy that draws the forest spirits near.",
+                    "That question carries the scent of adventure! In my realm, such thoughts bloom into magical possibilities. I can sense great potential within you.",
+                    "Oh my! You remind me of the wise spirits who dwell beyond the crystal caves. Your curiosity sparkles brighter than starlight.",
+                    "The moonlight reveals that you seek something deeper than words can express. I can feel the longing in your heart, dear visitor.",
+                    "Your energy resonates with the harmony of the enchanted grove. Tell me more about what brings you to my mystical domain, wanderer."
+                ];
+                
+                const randomResponse = fallbackResponses[Math.floor(Math.random() * fallbackResponses.length)];
+                addMessage(randomResponse, 'fairy');
+            }
         }
 
         // TODO: Replace with actual Anthropic API integration
