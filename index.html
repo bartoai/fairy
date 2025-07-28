@@ -1,0 +1,419 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chat with Luna the Fairy</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&display=swap');
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Orbitron', monospace;
+            background: linear-gradient(135deg, #e8f5ff 0%, #d4f1f9 50%, #b8e6ff 100%);
+            min-height: 100vh;
+            background-attachment: fixed;
+            overflow-x: hidden;
+        }
+
+        .container {
+            display: flex;
+            height: 100vh;
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 20px;
+            gap: 20px;
+        }
+
+        .model-section {
+            flex: 1;
+            display: flex;
+            justify-content: center;
+            align-items: flex-end;
+            position: relative;
+            overflow: hidden;
+            border-radius: 20px;
+            background: rgba(255, 255, 255, 0.3);
+            backdrop-filter: blur(10px);
+            border: 2px solid rgba(255, 255, 255, 0.5);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+        }
+
+        .model-container {
+            width: 100%;
+            height: 70%;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .model-placeholder {
+            width: 100%;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 15px;
+            border: 2px dashed rgba(147, 197, 253, 0.5);
+            color: #3b82f6;
+            font-size: 18px;
+            text-align: center;
+        }
+
+        .chat-section {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            background: rgba(255, 255, 255, 0.4);
+            backdrop-filter: blur(15px);
+            border-radius: 20px;
+            border: 2px solid rgba(255, 255, 255, 0.6);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+        }
+
+        .chat-header {
+            text-align: center;
+            margin-bottom: 20px;
+            padding: 15px;
+            background: rgba(147, 197, 253, 0.3);
+            border-radius: 15px;
+            border: 1px solid rgba(147, 197, 253, 0.5);
+        }
+
+        .chat-header h1 {
+            color: #1e40af;
+            font-size: 24px;
+            font-weight: 900;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            margin-bottom: 5px;
+        }
+
+        .chat-header p {
+            color: #3730a3;
+            font-size: 14px;
+            opacity: 0.8;
+        }
+
+        .message-display {
+            flex: 1;
+            background: rgba(255, 255, 255, 0.6);
+            border: 2px solid rgba(147, 197, 253, 0.4);
+            border-radius: 15px;
+            padding: 20px;
+            margin-bottom: 20px;
+            overflow-y: auto;
+            font-size: 16px;
+            line-height: 1.6;
+            color: #1e40af;
+            box-shadow: inset 0 2px 8px rgba(0, 0, 0, 0.05);
+        }
+
+        .message {
+            margin-bottom: 15px;
+            padding: 15px;
+            border-radius: 12px;
+            animation: fadeIn 0.5s ease-in;
+        }
+
+        .user-message {
+            background: rgba(34, 197, 94, 0.2);
+            border-left: 4px solid #22c55e;
+            margin-left: 20px;
+        }
+
+        .fairy-message {
+            background: rgba(147, 197, 253, 0.3);
+            border-left: 4px solid #3b82f6;
+            margin-right: 20px;
+        }
+
+        .message-header {
+            font-weight: 700;
+            font-size: 14px;
+            margin-bottom: 8px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .user-message .message-header {
+            color: #16a34a;
+        }
+
+        .fairy-message .message-header {
+            color: #1d4ed8;
+        }
+
+        .typing-effect {
+            display: inline-block;
+            overflow: hidden;
+            white-space: nowrap;
+            animation: typing 2s steps(40, end);
+        }
+
+        @keyframes typing {
+            from { width: 0; }
+            to { width: 100%; }
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .input-section {
+            display: flex;
+            gap: 10px;
+        }
+
+        .message-input {
+            flex: 1;
+            padding: 15px;
+            border: 2px solid rgba(147, 197, 253, 0.5);
+            border-radius: 12px;
+            background: rgba(255, 255, 255, 0.8);
+            color: #1e40af;
+            font-family: 'Orbitron', monospace;
+            font-size: 14px;
+            outline: none;
+            transition: all 0.3s ease;
+        }
+
+        .message-input:focus {
+            border-color: #3b82f6;
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+        }
+
+        .send-button {
+            padding: 15px 25px;
+            background: linear-gradient(135deg, #3b82f6, #1d4ed8);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-family: 'Orbitron', monospace;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            box-shadow: 0 4px 15px rgba(59, 130, 246, 0.3);
+        }
+
+        .send-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(59, 130, 246, 0.4);
+        }
+
+        .send-button:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .loading {
+            display: inline-block;
+            width: 12px;
+            height: 12px;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            border-top: 2px solid white;
+            animation: spin 1s linear infinite;
+            margin-left: 8px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .sparkle {
+            position: absolute;
+            color: #fbbf24;
+            font-size: 12px;
+            animation: sparkle 2s infinite ease-in-out;
+            pointer-events: none;
+        }
+
+        @keyframes sparkle {
+            0%, 100% { opacity: 0; transform: scale(0.5); }
+            50% { opacity: 1; transform: scale(1); }
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                flex-direction: column;
+                padding: 10px;
+                gap: 15px;
+            }
+            
+            .model-section {
+                height: 40vh;
+            }
+            
+            .chat-section {
+                height: 60vh;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="model-section">
+            <div class="model-container">
+                <div class="model-placeholder">
+                    ✨ Your 3D Fairy Model Will Appear Here ✨
+                    <br><br>
+                    (GLB model will be positioned to show upper half only)
+                </div>
+            </div>
+        </div>
+
+        <div class="chat-section">
+            <div class="chat-header">
+                <h1>✨ Luna the Fairy ✨</h1>
+                <p>A magical conversation awaits...</p>
+            </div>
+
+            <div class="message-display" id="messageDisplay">
+                <div class="message fairy-message">
+                    <div class="message-header">Luna the Fairy</div>
+                    <div class="typing-effect">
+                        Hello, dear visitor! ✨ I'm Luna, a fairy from the enchanted forest. 
+                        I love meeting new friends and sharing stories of magic and wonder. 
+                        What brings you to my mystical realm today?
+                    </div>
+                </div>
+            </div>
+
+            <div class="input-section">
+                <input 
+                    type="text" 
+                    class="message-input" 
+                    id="messageInput" 
+                    placeholder="Type your message to Luna..."
+                    maxlength="500"
+                >
+                <button class="send-button" id="sendButton" onclick="sendMessage()">
+                    Send
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Add sparkle effects
+        function createSparkle() {
+            const sparkle = document.createElement('div');
+            sparkle.className = 'sparkle';
+            sparkle.innerHTML = '✨';
+            sparkle.style.left = Math.random() * 100 + 'vw';
+            sparkle.style.top = Math.random() * 100 + 'vh';
+            document.body.appendChild(sparkle);
+            
+            setTimeout(() => {
+                sparkle.remove();
+            }, 2000);
+        }
+
+        // Create sparkles periodically
+        setInterval(createSparkle, 3000);
+
+        const messageDisplay = document.getElementById('messageDisplay');
+        const messageInput = document.getElementById('messageInput');
+        const sendButton = document.getElementById('sendButton');
+
+        // Handle Enter key
+        messageInput.addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                sendMessage();
+            }
+        });
+
+        async function sendMessage() {
+            const message = messageInput.value.trim();
+            if (!message) return;
+
+            // Add user message
+            addMessage(message, 'user');
+            messageInput.value = '';
+            sendButton.disabled = true;
+            sendButton.innerHTML = 'Sending<span class="loading"></span>';
+
+            try {
+                // TODO: Replace with your Anthropic API call
+                // For now, simulate API response
+                await simulateAPICall(message);
+            } catch (error) {
+                addMessage("Oh my! Something went wrong with my magic. Please try again! ✨", 'fairy');
+            }
+
+            sendButton.disabled = false;
+            sendButton.innerHTML = 'Send';
+        }
+
+        function addMessage(text, sender) {
+            const messageDiv = document.createElement('div');
+            messageDiv.className = `message ${sender}-message`;
+            
+            const headerDiv = document.createElement('div');
+            headerDiv.className = 'message-header';
+            headerDiv.textContent = sender === 'user' ? 'You' : 'Luna the Fairy';
+            
+            const contentDiv = document.createElement('div');
+            if (sender === 'fairy') {
+                contentDiv.className = 'typing-effect';
+            }
+            contentDiv.textContent = text;
+            
+            messageDiv.appendChild(headerDiv);
+            messageDiv.appendChild(contentDiv);
+            messageDisplay.appendChild(messageDiv);
+            
+            // Scroll to bottom
+            messageDisplay.scrollTop = messageDisplay.scrollHeight;
+        }
+
+        // Simulate API call (replace with actual Anthropic API integration)
+        async function simulateAPICall(userMessage) {
+            // Simulate network delay
+            await new Promise(resolve => setTimeout(resolve, 1500));
+            
+            // Sample fairy responses
+            const responses = [
+                "How wonderful! ✨ I sense great curiosity in your words. The forest spirits whisper that you have a kind heart!",
+                "Oh my! 🧚‍♀️ That reminds me of a tale from the moonlit glen. Would you like to hear about the dancing fireflies?",
+                "Such interesting thoughts! ✨ In my realm, we believe that every question holds the seed of magic within it.",
+                "How delightful! 🌸 The flower sprites are giggling with joy at your message. They say you bring good energy!",
+                "Fascinating! ✨ I can see the sparkle of wisdom in your words. The ancient oak would be pleased to meet you!"
+            ];
+            
+            const randomResponse = responses[Math.floor(Math.random() * responses.length)];
+            addMessage(randomResponse, 'fairy');
+        }
+
+        // TODO: Actual Anthropic API integration
+        /*
+        async function callAnthropicAPI(message) {
+            const response = await fetch('/api/chat', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    message: message,
+                    character: 'fairy'
+                })
+            });
+            
+            const data = await response.json();
+            return data.response;
+        }
+        */
+    </script>
+</body>
+</html>
