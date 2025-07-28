@@ -417,10 +417,17 @@
             z-index: 25;
             font-size: 18px;
             transition: all 0.3s ease;
+            width: 44px;
+            height: 44px;
+            background-image: url('https://cdn.prod.website-files.com/6740d85c4e3daeef29a89470/6887f4a60b66f3edf3a7b978_2303929-200%20(1).png');
+            background-size: 24px 24px;
+            background-repeat: no-repeat;
+            background-position: center;
         }
 
         .bg-toggle-btn:hover {
-            background: rgba(0, 255, 0, 0.1);
+            background-color: rgba(0, 255, 0, 0.1);
+            background-image: url('https://cdn.prod.website-files.com/6740d85c4e3daeef29a89470/6887f4a60b66f3edf3a7b978_2303929-200%20(1).png');
         }
 
         .bg-selector-title {
@@ -649,7 +656,6 @@
 
         <!-- Background Toggle Button -->
         <button class="bg-toggle-btn" onclick="toggleBackgroundSelector()" title="Change Background">
-            🎨
         </button>
 
         <!-- Background Selector -->
@@ -1068,15 +1074,19 @@
             const containerWidth = container.clientWidth;
             const containerHeight = container.clientHeight;
             
-            // Update camera aspect ratio
-            camera.aspect = containerWidth / containerHeight;
-            camera.updateProjectionMatrix();
+            // Update camera aspect ratio only if camera exists
+            if (camera) {
+                camera.aspect = containerWidth / containerHeight;
+                camera.updateProjectionMatrix();
+            }
             
-            // Update renderer size
-            renderer.setSize(containerWidth, containerHeight);
+            // Update renderer size only if renderer exists
+            if (renderer) {
+                renderer.setSize(containerWidth, containerHeight);
+            }
             
-            // Force a render
-            if (scene && camera) {
+            // Force a render only if scene and camera exist
+            if (scene && camera && renderer) {
                 renderer.render(scene, camera);
             }
         }
