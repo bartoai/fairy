@@ -7,7 +7,7 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/loaders/GLTFLoader.js"></script>
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Courier+Prime:wght@400;700&display=swap');
         
         * {
             margin: 0;
@@ -16,322 +16,339 @@
         }
 
         body {
-            font-family: 'Orbitron', monospace;
-            background: linear-gradient(135deg, #e8f5ff 0%, #d4f1f9 50%, #b8e6ff 100%);
-            min-height: 100vh;
-            background-attachment: fixed;
-            overflow-x: hidden;
-        }
-
-        .container {
-            display: flex;
+            font-family: 'Courier Prime', monospace;
             height: 100vh;
-            max-width: 1400px;
-            margin: 0 auto;
-            padding: 20px;
-            gap: 20px;
-        }
-
-        .model-section {
-            flex: 1;
-            display: flex;
-            justify-content: center;
-            align-items: flex-end;
-            position: relative;
             overflow: hidden;
-            border-radius: 20px;
-            background: rgba(255, 255, 255, 0.3);
-            backdrop-filter: blur(10px);
-            border: 2px solid rgba(255, 255, 255, 0.5);
-            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
-        }
-
-        .model-container {
-            width: 100%;
-            height: 70%;
+            background: #000;
             position: relative;
-            overflow: hidden;
         }
 
-        .model-canvas {
+        /* Background image container */
+        .background {
+            position: absolute;
+            top: 0;
+            left: 0;
             width: 100%;
             height: 100%;
-            border-radius: 15px;
-            overflow: hidden;
-            display: none; /* Hidden until model loads */
+            background-image: url('https://cdn.prod.website-files.com/6740d85c4e3daeef29a89470/6887cb12ef6fe7c6ece80324_anime-bedroom-uidy4uvprhbhg84q.jpg');
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            z-index: 1;
         }
 
-        .loading-message {
+        /* Social media icons */
+        .social-icons {
+            position: absolute;
+            top: 20px;
+            z-index: 10;
+        }
+
+        .social-icons.left {
+            left: 20px;
+        }
+
+        .social-icons.right {
+            right: 20px;
+        }
+
+        .social-icon {
+            width: 80px;
+            height: 80px;
+            background: rgba(0, 0, 0, 0.8);
+            border: 2px solid #333;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #00ff00;
+            font-size: 12px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-bottom: 10px;
+        }
+
+        .social-icon:hover {
+            background: rgba(0, 50, 0, 0.9);
+            border-color: #00ff00;
+            transform: scale(1.05);
+        }
+
+        /* Character model container */
+        .character-container {
+            position: absolute;
+            bottom: 200px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 400px;
+            height: 500px;
+            z-index: 5;
+        }
+
+        .character-canvas {
+            width: 100%;
+            height: 100%;
+        }
+
+        .character-loading {
             width: 100%;
             height: 100%;
             display: flex;
             align-items: center;
             justify-content: center;
-            background: rgba(255, 255, 255, 0.2);
-            border-radius: 15px;
-            border: 2px dashed rgba(147, 197, 253, 0.5);
-            color: #3b82f6;
-            font-size: 18px;
+            color: rgba(255, 255, 255, 0.7);
+            font-size: 14px;
             text-align: center;
             flex-direction: column;
             gap: 10px;
         }
 
-        .chat-section {
-            flex: 1;
+        /* Text box container */
+        .text-box {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 200px;
+            background: rgba(0, 0, 0, 0.95);
+            border-top: 2px solid #333;
+            z-index: 10;
+            padding: 20px;
             display: flex;
             flex-direction: column;
-            background: rgba(255, 255, 255, 0.4);
-            backdrop-filter: blur(15px);
-            border-radius: 20px;
-            border: 2px solid rgba(255, 255, 255, 0.6);
-            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
-            padding: 20px;
         }
 
-        .chat-header {
-            text-align: center;
-            margin-bottom: 20px;
-            padding: 15px;
-            background: rgba(147, 197, 253, 0.3);
-            border-radius: 15px;
-            border: 1px solid rgba(147, 197, 253, 0.5);
-        }
-
-        .chat-header h1 {
-            color: #1e40af;
-            font-size: 24px;
-            font-weight: 900;
-            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-            margin-bottom: 5px;
-        }
-
-        .chat-header p {
-            color: #3730a3;
-            font-size: 14px;
-            opacity: 0.8;
-        }
-
-        .message-display {
-            flex: 1;
-            background: rgba(255, 255, 255, 0.6);
-            border: 2px solid rgba(147, 197, 253, 0.4);
-            border-radius: 15px;
-            padding: 20px;
-            margin-bottom: 20px;
-            overflow-y: auto;
+        .character-name {
+            color: #00ff00;
             font-size: 16px;
+            font-weight: bold;
+            margin-bottom: 10px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .dialogue-text {
+            color: #ffffff;
+            font-size: 14px;
             line-height: 1.6;
-            color: #1e40af;
-            box-shadow: inset 0 2px 8px rgba(0, 0, 0, 0.05);
+            flex: 1;
+            overflow-y: auto;
+            margin-bottom: 15px;
+            padding-right: 10px;
+        }
+
+        .dialogue-text::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .dialogue-text::-webkit-scrollbar-track {
+            background: #1a1a1a;
+        }
+
+        .dialogue-text::-webkit-scrollbar-thumb {
+            background: #333;
+            border-radius: 3px;
+        }
+
+        .dialogue-text::-webkit-scrollbar-thumb:hover {
+            background: #555;
         }
 
         .message {
             margin-bottom: 15px;
-            padding: 15px;
-            border-radius: 12px;
-            animation: fadeIn 0.5s ease-in;
+            padding: 8px 0;
         }
 
-        .user-message {
-            background: rgba(34, 197, 94, 0.2);
-            border-left: 4px solid #22c55e;
-            margin-left: 20px;
+        .message.user {
+            color: #ffff00;
         }
 
-        .fairy-message {
-            background: rgba(147, 197, 253, 0.3);
-            border-left: 4px solid #3b82f6;
-            margin-right: 20px;
+        .message.user::before {
+            content: "> ";
+            color: #00ff00;
         }
 
-        .message-header {
-            font-weight: 700;
-            font-size: 14px;
-            margin-bottom: 8px;
-            text-transform: uppercase;
-            letter-spacing: 1px;
+        .message.fairy {
+            color: #ffffff;
         }
 
-        .user-message .message-header {
-            color: #16a34a;
+        .typing-indicator {
+            color: #00ff00;
+            animation: blink 1s infinite;
         }
 
-        .fairy-message .message-header {
-            color: #1d4ed8;
+        @keyframes blink {
+            0%, 50% { opacity: 1; }
+            51%, 100% { opacity: 0; }
         }
 
-        .typing-effect {
-            display: inline-block;
-            overflow: hidden;
-            white-space: nowrap;
-            animation: typing 2s steps(40, end);
-        }
-
-        @keyframes typing {
-            from { width: 0; }
-            to { width: 100%; }
-        }
-
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(10px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
-        .input-section {
+        .input-container {
             display: flex;
+            align-items: center;
             gap: 10px;
+            border-top: 1px solid #333;
+            padding-top: 15px;
+        }
+
+        .input-prompt {
+            color: #00ff00;
+            font-size: 14px;
+            white-space: nowrap;
         }
 
         .message-input {
             flex: 1;
-            padding: 15px;
-            border: 2px solid rgba(147, 197, 253, 0.5);
-            border-radius: 12px;
-            background: rgba(255, 255, 255, 0.8);
-            color: #1e40af;
-            font-family: 'Orbitron', monospace;
+            background: transparent;
+            border: none;
+            color: #ffffff;
+            font-family: 'Courier Prime', monospace;
             font-size: 14px;
             outline: none;
-            transition: all 0.3s ease;
+            padding: 2px;
+            border-bottom: 1px solid #333;
         }
 
         .message-input:focus {
-            border-color: #3b82f6;
-            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+            border-bottom-color: #00ff00;
         }
 
         .send-button {
-            padding: 15px 25px;
-            background: linear-gradient(135deg, #3b82f6, #1d4ed8);
-            color: white;
-            border: none;
-            border-radius: 12px;
-            font-family: 'Orbitron', monospace;
-            font-weight: 700;
+            background: transparent;
+            border: 1px solid #333;
+            color: #00ff00;
+            padding: 6px 12px;
+            font-family: 'Courier Prime', monospace;
+            font-size: 12px;
             cursor: pointer;
-            transition: all 0.3s ease;
             text-transform: uppercase;
             letter-spacing: 1px;
-            box-shadow: 0 4px 15px rgba(59, 130, 246, 0.3);
+            transition: all 0.3s ease;
         }
 
-        .send-button:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 6px 20px rgba(59, 130, 246, 0.4);
+        .send-button:hover:not(:disabled) {
+            background: rgba(0, 255, 0, 0.1);
+            border-color: #00ff00;
         }
 
         .send-button:disabled {
-            opacity: 0.6;
+            opacity: 0.5;
             cursor: not-allowed;
-            transform: none;
         }
 
-        .loading {
+        .loading-dots {
             display: inline-block;
-            width: 12px;
-            height: 12px;
-            border: 2px solid rgba(255, 255, 255, 0.3);
-            border-radius: 50%;
-            border-top: 2px solid white;
-            animation: spin 1s linear infinite;
-            margin-left: 8px;
         }
 
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
+        .loading-dots::after {
+            content: '';
+            animation: dots 1.5s infinite;
         }
 
-        .sparkle {
-            position: absolute;
-            color: #fbbf24;
-            font-size: 12px;
-            animation: sparkle 2s infinite ease-in-out;
-            pointer-events: none;
+        @keyframes dots {
+            0%, 20% { content: '.'; }
+            40% { content: '..'; }
+            60%, 100% { content: '...'; }
         }
 
-        @keyframes sparkle {
-            0%, 100% { opacity: 0; transform: scale(0.5); }
-            50% { opacity: 1; transform: scale(1); }
-        }
-
+        /* Responsive design */
         @media (max-width: 768px) {
-            .container {
-                flex-direction: column;
-                padding: 10px;
-                gap: 15px;
+            .character-container {
+                width: 300px;
+                height: 400px;
+                bottom: 220px;
             }
-            
-            .model-section {
-                height: 40vh;
+
+            .text-box {
+                height: 220px;
+                padding: 15px;
             }
-            
-            .chat-section {
-                height: 60vh;
+
+            .social-icon {
+                width: 60px;
+                height: 60px;
+                font-size: 10px;
+            }
+
+            .social-icons {
+                top: 10px;
+            }
+
+            .social-icons.left {
+                left: 10px;
+            }
+
+            .social-icons.right {
+                right: 10px;
+            }
+
+            .dialogue-text {
+                font-size: 13px;
+            }
+
+            .message-input {
+                font-size: 13px;
             }
         }
     </style>
 </head>
 <body>
-    <div class="container">
-        <div class="model-section">
-            <div class="model-container">
-                <canvas id="modelCanvas" class="model-canvas"></canvas>
-                <div id="loadingMessage" class="loading-message">
-                    <div>✨ Loading Luna the Fairy ✨</div>
-                    <div class="loading"></div>
-                </div>
+    <!-- Background -->
+    <div class="background"></div>
+
+    <!-- Social Media Icons -->
+    <div class="social-icons left">
+        <div class="social-icon" onclick="window.open('https://twitter.com', '_blank')">
+            Twitter<br>Logo
+        </div>
+    </div>
+
+    <div class="social-icons right">
+        <div class="social-icon" onclick="window.open('#', '_blank')">
+            Bonk<br>Logo
+        </div>
+    </div>
+
+    <!-- Character Model -->
+    <div class="character-container">
+        <canvas id="characterCanvas" class="character-canvas"></canvas>
+        <div id="characterLoading" class="character-loading">
+            <div>Loading Luna...</div>
+            <div class="loading-dots"></div>
+        </div>
+    </div>
+
+    <!-- Text Box -->
+    <div class="text-box">
+        <div class="character-name">Luna the Fairy</div>
+        <div class="dialogue-text" id="dialogueText">
+            <div class="message fairy">
+                Welcome to my magical realm! ✨ I'm Luna, and I've been waiting for someone like you to visit. 
+                The forest spirits whisper that you have questions burning in your heart. What brings you to my domain today?
             </div>
         </div>
-
-        <div class="chat-section">
-            <div class="chat-header">
-                <h1>✨ Luna the Fairy ✨</h1>
-                <p>A magical conversation awaits...</p>
-            </div>
-
-            <div class="message-display" id="messageDisplay">
-                <div class="message fairy-message">
-                    <div class="message-header">Luna the Fairy</div>
-                    <div class="typing-effect">
-                        Hello, dear visitor! ✨ I'm Luna, a fairy from the enchanted forest. 
-                        I love meeting new friends and sharing stories of magic and wonder. 
-                        What brings you to my mystical realm today?
-                    </div>
-                </div>
-            </div>
-
-            <div class="input-section">
-                <input 
-                    type="text" 
-                    class="message-input" 
-                    id="messageInput" 
-                    placeholder="Type your message to Luna..."
-                    maxlength="500"
-                >
-                <button class="send-button" id="sendButton" onclick="sendMessage()">
-                    Send
-                </button>
-            </div>
+        <div class="input-container">
+            <span class="input-prompt">></span>
+            <input type="text" class="message-input" id="messageInput" placeholder="Type your message..." maxlength="500">
+            <button class="send-button" id="sendButton" onclick="sendMessage()">Send</button>
         </div>
     </div>
 
     <script>
-        // Three.js setup for GLB model
-        let scene, camera, renderer, fairy;
-        const canvas = document.getElementById('modelCanvas');
-        const loadingMessage = document.getElementById('loadingMessage');
+        // Three.js setup for character model
+        let scene, camera, renderer, fairy, mixer;
+        const canvas = document.getElementById('characterCanvas');
+        const loadingDiv = document.getElementById('characterLoading');
 
         function initThreeJS() {
             // Scene setup
             scene = new THREE.Scene();
-            scene.background = new THREE.Color(0xf0f8ff); // Light blue background
 
-            // Camera setup for webcam-like view
-            camera = new THREE.PerspectiveCamera(50, canvas.clientWidth / canvas.clientHeight, 0.1, 1000);
-            camera.position.set(0, 1.5, 3); // Position to show upper half
-            camera.lookAt(0, 1.5, 0);
+            // Camera setup for visual novel style
+            camera = new THREE.PerspectiveCamera(45, canvas.clientWidth / canvas.clientHeight, 0.1, 1000);
+            camera.position.set(0, 1.2, 2.5); // Position to show from waist up
+            camera.lookAt(0, 1.2, 0);
 
             // Renderer setup
             renderer = new THREE.WebGLRenderer({ 
@@ -344,37 +361,34 @@
             renderer.shadowMap.enabled = true;
             renderer.shadowMap.type = THREE.PCFSoftShadowMap;
 
-            // Lighting setup
-            const ambientLight = new THREE.AmbientLight(0xffffff, 0.6);
+            // Lighting setup for character
+            const ambientLight = new THREE.AmbientLight(0xffffff, 0.8);
             scene.add(ambientLight);
 
-            const directionalLight = new THREE.DirectionalLight(0xffffff, 0.8);
-            directionalLight.position.set(5, 10, 5);
-            directionalLight.castShadow = true;
-            directionalLight.shadow.mapSize.width = 2048;
-            directionalLight.shadow.mapSize.height = 2048;
-            scene.add(directionalLight);
+            const keyLight = new THREE.DirectionalLight(0xffffff, 1.2);
+            keyLight.position.set(2, 3, 2);
+            keyLight.castShadow = true;
+            scene.add(keyLight);
 
-            // Soft fill light from the front
-            const fillLight = new THREE.DirectionalLight(0x87ceeb, 0.4);
-            fillLight.position.set(0, 0, 5);
+            const fillLight = new THREE.DirectionalLight(0xa8c8ff, 0.6);
+            fillLight.position.set(-2, 1, 1);
             scene.add(fillLight);
 
-            // Load the GLB model
+            // Load the fairy model
             loadFairyModel();
         }
 
         function loadFairyModel() {
             const loader = new THREE.GLTFLoader();
-            const modelUrl = 'https://raw.githubusercontent.com/bartoai/fairy/main/fairywoman.glb';
+            const modelUrl = 'https://github.com/bartoai/fairy/raw/main/fairywoman.glb';
             
             loader.load(
                 modelUrl,
                 function(gltf) {
                     fairy = gltf.scene;
                     
-                    // Scale and position the model
-                    fairy.scale.set(1, 1, 1);
+                    // Scale and position for visual novel style
+                    fairy.scale.set(1.5, 1.5, 1.5);
                     fairy.position.set(0, 0, 0);
                     
                     // Enable shadows
@@ -387,37 +401,28 @@
                     
                     scene.add(fairy);
                     
-                    // Hide loading message and show canvas
-                    loadingMessage.style.display = 'none';
+                    // Hide loading and show model
+                    loadingDiv.style.display = 'none';
                     canvas.style.display = 'block';
                     
-                    // Start animation if available
+                    // Setup animations
                     if (gltf.animations && gltf.animations.length > 0) {
-                        const mixer = new THREE.AnimationMixer(fairy);
+                        mixer = new THREE.AnimationMixer(fairy);
                         const action = mixer.clipAction(gltf.animations[0]);
                         action.play();
-                        
-                        // Animation loop
-                        function animateModel() {
-                            requestAnimationFrame(animateModel);
-                            mixer.update(0.01);
-                            renderer.render(scene, camera);
-                        }
-                        animateModel();
-                    } else {
-                        // Static render loop
-                        animate();
                     }
+                    
+                    animate();
                 },
                 function(progress) {
                     console.log('Loading progress:', (progress.loaded / progress.total * 100) + '%');
                 },
                 function(error) {
                     console.error('Error loading model:', error);
-                    loadingMessage.innerHTML = `
-                        <div>❌ Failed to load fairy model</div>
-                        <div style="font-size: 14px; margin-top: 10px;">
-                            Please check if fairywoman.glb exists in your repo
+                    loadingDiv.innerHTML = `
+                        <div>Failed to load model</div>
+                        <div style="font-size: 12px; margin-top: 5px;">
+                            Check if fairywoman.glb exists in repo
                         </div>
                     `;
                 }
@@ -427,9 +432,13 @@
         function animate() {
             requestAnimationFrame(animate);
             
-            // Gentle rotation animation
-            if (fairy) {
-                fairy.rotation.y += 0.002;
+            if (mixer) {
+                mixer.update(0.016);
+            }
+            
+            // Subtle breathing animation if no animations
+            if (fairy && !mixer) {
+                fairy.position.y = Math.sin(Date.now() * 0.001) * 0.02;
             }
             
             renderer.render(scene, camera);
@@ -444,32 +453,13 @@
         }
 
         window.addEventListener('resize', onWindowResize);
-
-        // Initialize Three.js when page loads
         window.addEventListener('load', initThreeJS);
 
-        // Add sparkle effects
-        function createSparkle() {
-            const sparkle = document.createElement('div');
-            sparkle.className = 'sparkle';
-            sparkle.innerHTML = '✨';
-            sparkle.style.left = Math.random() * 100 + 'vw';
-            sparkle.style.top = Math.random() * 100 + 'vh';
-            document.body.appendChild(sparkle);
-            
-            setTimeout(() => {
-                sparkle.remove();
-            }, 2000);
-        }
-
-        // Create sparkles periodically
-        setInterval(createSparkle, 3000);
-
-        const messageDisplay = document.getElementById('messageDisplay');
+        // Chat functionality
+        const dialogueText = document.getElementById('dialogueText');
         const messageInput = document.getElementById('messageInput');
         const sendButton = document.getElementById('sendButton');
 
-        // Handle Enter key
         messageInput.addEventListener('keypress', function(e) {
             if (e.key === 'Enter') {
                 sendMessage();
@@ -484,14 +474,13 @@
             addMessage(message, 'user');
             messageInput.value = '';
             sendButton.disabled = true;
-            sendButton.innerHTML = 'Sending<span class="loading"></span>';
+            sendButton.innerHTML = 'Sending<span class="loading-dots"></span>';
 
             try {
-                // TODO: Replace with your Anthropic API call
-                // For now, simulate API response
+                // Simulate API call - replace with actual Anthropic API
                 await simulateAPICall(message);
             } catch (error) {
-                addMessage("Oh my! Something went wrong with my magic. Please try again! ✨", 'fairy');
+                addMessage("*The fairy's magic flickers* Something went wrong... please try again!", 'fairy');
             }
 
             sendButton.disabled = false;
@@ -500,45 +489,30 @@
 
         function addMessage(text, sender) {
             const messageDiv = document.createElement('div');
-            messageDiv.className = `message ${sender}-message`;
+            messageDiv.className = `message ${sender}`;
+            messageDiv.textContent = text;
             
-            const headerDiv = document.createElement('div');
-            headerDiv.className = 'message-header';
-            headerDiv.textContent = sender === 'user' ? 'You' : 'Luna the Fairy';
-            
-            const contentDiv = document.createElement('div');
-            if (sender === 'fairy') {
-                contentDiv.className = 'typing-effect';
-            }
-            contentDiv.textContent = text;
-            
-            messageDiv.appendChild(headerDiv);
-            messageDiv.appendChild(contentDiv);
-            messageDisplay.appendChild(messageDiv);
-            
-            // Scroll to bottom
-            messageDisplay.scrollTop = messageDisplay.scrollHeight;
+            dialogueText.appendChild(messageDiv);
+            dialogueText.scrollTop = dialogueText.scrollHeight;
         }
 
-        // Simulate API call (replace with actual Anthropic API integration)
+        // Simulate API response (replace with actual Anthropic integration)
         async function simulateAPICall(userMessage) {
-            // Simulate network delay
             await new Promise(resolve => setTimeout(resolve, 1500));
             
-            // Sample fairy responses
             const responses = [
-                "How wonderful! ✨ I sense great curiosity in your words. The forest spirits whisper that you have a kind heart!",
-                "Oh my! 🧚‍♀️ That reminds me of a tale from the moonlit glen. Would you like to hear about the dancing fireflies?",
-                "Such interesting thoughts! ✨ In my realm, we believe that every question holds the seed of magic within it.",
-                "How delightful! 🌸 The flower sprites are giggling with joy at your message. They say you bring good energy!",
-                "Fascinating! ✨ I can see the sparkle of wisdom in your words. The ancient oak would be pleased to meet you!"
+                "*Luna's wings shimmer softly* How fascinating! The ancient trees have been whispering about visitors like you...",
+                "*She tilts her head curiously* That question carries the scent of adventure! In my realm, such thoughts bloom into magical possibilities.",
+                "*Sparkles dance around Luna* Oh my! You remind me of the wise spirits who dwell beyond the crystal caves.",
+                "*Her eyes gleam with otherworldly knowledge* The moonlight reveals that you seek something deeper than words can express.",
+                "*Luna gestures gracefully* Your energy resonates with the harmony of the enchanted grove. Tell me more, dear wanderer!"
             ];
             
             const randomResponse = responses[Math.floor(Math.random() * responses.length)];
             addMessage(randomResponse, 'fairy');
         }
 
-        // TODO: Actual Anthropic API integration
+        // TODO: Replace with actual Anthropic API integration
         /*
         async function callAnthropicAPI(message) {
             const response = await fetch('/api/chat', {
@@ -548,7 +522,8 @@
                 },
                 body: JSON.stringify({
                     message: message,
-                    character: 'fairy'
+                    character: 'fairy',
+                    style: 'mystical'
                 })
             });
             
