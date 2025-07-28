@@ -432,11 +432,16 @@
             border-radius: 4px;
             transition: all 0.3s ease;
             min-width: 40px;
+            background-image: url('https://cdn.prod.website-files.com/6740d85c4e3daeef29a89470/6887eb2c600a7b6a759912ee_image%20(59).png');
+            background-size: 20px 20px;
+            background-repeat: no-repeat;
+            background-position: center;
         }
 
         .mic-button:hover:not(:disabled) {
-            background: rgba(0, 255, 0, 0.1);
+            background-color: rgba(0, 255, 0, 0.1);
             border-color: #00ff00;
+            background-image: url('https://cdn.prod.website-files.com/6740d85c4e3daeef29a89470/6887eb2c600a7b6a759912ee_image%20(59).png');
         }
 
         .mic-button:disabled {
@@ -445,16 +450,18 @@
         }
 
         .mic-button.recording {
-            background: rgba(255, 0, 0, 0.2);
+            background-color: rgba(255, 0, 0, 0.2);
             border-color: #ff0000;
             color: #ff0000;
             animation: pulse 1s infinite;
+            background-image: none; /* Remove icon when recording */
         }
 
         .mic-button.processing {
-            background: rgba(255, 255, 0, 0.2);
+            background-color: rgba(255, 255, 0, 0.2);
             border-color: #ffff00;
             color: #ffff00;
+            background-image: url('https://cdn.prod.website-files.com/6740d85c4e3daeef29a89470/6887eb2c600a7b6a759912ee_image%20(59).png');
         }
 
         .send-button {
@@ -592,7 +599,7 @@
             <div class="input-container">
                 <span class="input-prompt">></span>
                 <input type="text" class="message-input" id="messageInput" placeholder="Type your message..." maxlength="500">
-                <button class="mic-button" id="micButton" onclick="toggleSpeechRecognition()" title="Click to speak">🎤</button>
+                <button class="mic-button" id="micButton" onclick="toggleSpeechRecognition()" title="Click to speak"></button>
                 <button class="send-button" id="sendButton" onclick="sendMessage()">Send</button>
             </div>
         </div>
@@ -719,7 +726,7 @@
         function resetMicButton() {
             isRecording = false;
             micButton.className = 'mic-button';
-            micButton.textContent = '🎤';
+            micButton.textContent = '';
         }
 
         // Background music function
