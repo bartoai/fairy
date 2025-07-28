@@ -91,7 +91,7 @@
         /* Character model container */
         .character-container {
             position: absolute;
-            bottom: 150px; /* Moved up to make room for bigger window */
+            bottom: 220px; /* Adjusted for new text box positioning */
             left: 50%;
             transform: translateX(-50%);
             width: 1700px; /* Made extra wide to show full wings */
@@ -120,16 +120,20 @@
         /* Text box container */
         .text-box {
             position: absolute;
-            bottom: 0;
-            left: 0;
-            right: 0;
-            height: 200px;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 90%;
+            max-width: 1200px;
+            height: 180px;
             background: rgba(0, 0, 0, 0.95);
-            border-top: 2px solid #333;
+            border: 2px solid #333;
+            border-radius: 8px;
             z-index: 10;
             padding: 20px;
             display: flex;
             flex-direction: column;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.7);
         }
 
         .character-name {
