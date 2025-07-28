@@ -382,13 +382,92 @@
             color: #888;
         }
 
-        .reaction-count {
-            display: inline-block;
-            margin-right: 10px;
-            padding: 2px 6px;
+        /* Background selector styles */
+        .background-selector {
+            position: fixed;
+            top: 50%;
+            right: -300px;
+            transform: translateY(-50%);
+            width: 280px;
+            background: rgba(0, 0, 0, 0.95);
+            border: 2px solid #333;
+            border-radius: 8px;
+            padding: 20px;
+            z-index: 20;
+            transition: right 0.3s ease;
+            max-height: 80vh;
+            overflow-y: auto;
+        }
+
+        .background-selector.open {
+            right: 20px;
+        }
+
+        .bg-toggle-btn {
+            position: fixed;
+            top: 50%;
+            right: 20px;
+            transform: translateY(-50%);
+            background: rgba(0, 0, 0, 0.8);
+            border: 1px solid #00ff00;
+            color: #00ff00;
+            padding: 10px;
+            border-radius: 5px;
+            cursor: pointer;
+            z-index: 25;
+            font-size: 18px;
+            transition: all 0.3s ease;
+        }
+
+        .bg-toggle-btn:hover {
             background: rgba(0, 255, 0, 0.1);
-            border-radius: 3px;
-            border: 1px solid #333;
+        }
+
+        .bg-selector-title {
+            color: #00ff00;
+            font-size: 16px;
+            font-weight: bold;
+            margin-bottom: 15px;
+            text-align: center;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .background-option {
+            width: 100%;
+            height: 60px;
+            background-size: cover;
+            background-position: center;
+            border: 2px solid #333;
+            border-radius: 8px;
+            margin-bottom: 10px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .background-option:hover {
+            border-color: #00ff00;
+            transform: scale(1.02);
+        }
+
+        .background-option.active {
+            border-color: #00ff00;
+            box-shadow: 0 0 15px rgba(0, 255, 0, 0.5);
+        }
+
+        .background-option::after {
+            content: attr(data-name);
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: rgba(0, 0, 0, 0.8);
+            color: white;
+            font-size: 12px;
+            padding: 5px;
+            text-align: center;
         }
 
         .input-container {
@@ -563,6 +642,36 @@
 
     <!-- Main Content -->
     <div id="mainContent" class="main-content">
+        <!-- Memory Indicator -->
+        <div id="memoryIndicator" class="memory-indicator">
+            Bonkara remembers you! ✨
+        </div>
+
+        <!-- Background Toggle Button -->
+        <button class="bg-toggle-btn" onclick="toggleBackgroundSelector()" title="Change Background">
+            🎨
+        </button>
+
+        <!-- Background Selector -->
+        <div id="backgroundSelector" class="background-selector">
+            <div class="bg-selector-title">Choose Background</div>
+            <div class="background-option active" data-bg="default" data-name="Bedroom" 
+                 style="background-image: url('https://cdn.prod.website-files.com/6740d85c4e3daeef29a89470/6887cb12ef6fe7c6ece80324_anime-bedroom-uidy4uvprhbhg84q.jpg')"
+                 onclick="setBackground('default')"></div>
+            <div class="background-option" data-bg="forest" data-name="Enchanted Forest"
+                 style="background-image: url('https://images.unsplash.com/photo-1441974231531-c6227db76b6e?w=400&h=200&fit=crop')"
+                 onclick="setBackground('forest')"></div>
+            <div class="background-option" data-bg="castle" data-name="Fairy Castle"
+                 style="background-image: url('https://images.unsplash.com/photo-1520637836862-4d197d17c93a?w=400&h=200&fit=crop')"
+                 onclick="setBackground('castle')"></div>
+            <div class="background-option" data-bg="garden" data-name="Magic Garden"
+                 style="background-image: url('https://images.unsplash.com/photo-1416879595882-3373a0480b5b?w=400&h=200&fit=crop')"
+                 onclick="setBackground('garden')"></div>
+            <div class="background-option" data-bg="night" data-name="Starry Night"
+                 style="background-image: url('https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=400&h=200&fit=crop')"
+                 onclick="setBackground('night')"></div>
+        </div>
+
         <!-- Background -->
         <div class="background"></div>
 
@@ -659,6 +768,14 @@
             loadingScreen.classList.add('hidden');
             mainContent.classList.add('visible');
             
+            // Set saved background
+            setBackground(currentBackground);
+            
+            // Show memory indicator if user has previous conversations
+            if (Object.keys(userMemory).length > 0) {
+                showMemoryIndicator();
+            }
+            
             // Start background music
             startBackgroundMusic();
             
@@ -670,6 +787,43 @@
             
             // Start loading model immediately instead of waiting
             initThreeJS();
+        }
+
+        // Memory functions
+        function updateUserMemory(key, value) {
+            userMemory[key] = value;
+            localStorage.setItem('bonkara_memory', JSON.stringify(userMemory));
+        }
+
+        function getUserMemory() {
+            return userMemory;
+        }
+
+        function showMemoryIndicator() {
+            const indicator = document.getElementById('memoryIndicator');
+            indicator.classList.add('show');
+            setTimeout(() => {
+                indicator.classList.remove('show');
+            }, 3000);
+        }
+
+        // Background functions
+        function toggleBackgroundSelector() {
+            const selector = document.getElementById('backgroundSelector');
+            selector.classList.toggle('open');
+        }
+
+        function setBackground(bgKey) {
+            currentBackground = bgKey;
+            const backgroundDiv = document.querySelector('.background');
+            backgroundDiv.style.backgroundImage = `url('${backgrounds[bgKey]}')`;
+            localStorage.setItem('bonkara_background', bgKey);
+            
+            // Update active state
+            document.querySelectorAll('.background-option').forEach(option => {
+                option.classList.remove('active');
+            });
+            document.querySelector(`[data-bg="${bgKey}"]`)?.classList.add('active');
         }
 
         // Speech recognition setup
@@ -952,6 +1106,7 @@
             showTypingIndicator();
 
             try {
+                // Include user memory in the API call for context
                 const response = await fetch('/api/chat', {
                     method: 'POST',
                     headers: {
@@ -959,7 +1114,8 @@
                     },
                     body: JSON.stringify({
                         message: message,
-                        character: 'bonkara'
+                        character: 'bonkara',
+                        userMemory: getUserMemory()
                     })
                 });
 
