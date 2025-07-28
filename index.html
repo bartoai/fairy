@@ -380,7 +380,8 @@
 
         function loadFairyModel() {
             const loader = new THREE.GLTFLoader();
-            const modelUrl = 'https://github.com/bartoai/fairy/raw/main/fairywoman.glb';
+            // Using jsdelivr CDN which supports CORS for GitHub files
+            const modelUrl = 'https://cdn.jsdelivr.net/gh/bartoai/fairy@main/fairywoman.glb';
             
             loader.load(
                 modelUrl,
