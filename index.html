@@ -586,7 +586,12 @@
         function initThreeJS() {
             scene = new THREE.Scene();
 
-            camera = new THREE.PerspectiveCamera(45, canvas.clientWidth / canvas.clientHeight, 0.1, 1000);
+            // Get the actual container dimensions
+            const container = document.querySelector('.character-container');
+            const containerWidth = container.clientWidth;
+            const containerHeight = container.clientHeight;
+
+            camera = new THREE.PerspectiveCamera(45, containerWidth / containerHeight, 0.1, 1000);
             camera.position.set(0, 1.5, 2.2);
             camera.lookAt(0, 1.2, 0);
 
@@ -595,7 +600,9 @@
                 antialias: true, 
                 alpha: true 
             });
-            renderer.setSize(canvas.clientWidth, canvas.clientHeight);
+            
+            // Force proper sizing
+            renderer.setSize(containerWidth, containerHeight);
             renderer.setPixelRatio(window.devicePixelRatio);
             renderer.shadowMap.enabled = true;
             renderer.shadowMap.type = THREE.PCFSoftShadowMap;
@@ -611,6 +618,11 @@
             const fillLight = new THREE.DirectionalLight(0xa8c8ff, 0.6);
             fillLight.position.set(-2, 1, 1);
             scene.add(fillLight);
+
+            // Force a resize to ensure proper canvas sizing
+            setTimeout(() => {
+                onWindowResize();
+            }, 100);
 
             loadFairyModel();
         }
@@ -647,6 +659,12 @@
                     
                     loadingDiv.style.display = 'none';
                     canvas.style.display = 'block';
+                    
+                    // Force canvas to show and resize properly
+                    setTimeout(() => {
+                        onWindowResize();
+                        renderer.render(scene, camera);
+                    }, 50);
                     
                     if (gltf.animations && gltf.animations.length > 0) {
                         mixer = new THREE.AnimationMixer(fairy);
@@ -692,9 +710,20 @@
 
         function onWindowResize() {
             const container = canvas.parentElement;
-            camera.aspect = container.clientWidth / container.clientHeight;
+            const containerWidth = container.clientWidth;
+            const containerHeight = container.clientHeight;
+            
+            // Update camera aspect ratio
+            camera.aspect = containerWidth / containerHeight;
             camera.updateProjectionMatrix();
-            renderer.setSize(container.clientWidth, container.clientHeight);
+            
+            // Update renderer size
+            renderer.setSize(containerWidth, containerHeight);
+            
+            // Force a render
+            if (scene && camera) {
+                renderer.render(scene, camera);
+            }
         }
 
         window.addEventListener('resize', onWindowResize);
