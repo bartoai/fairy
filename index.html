@@ -685,18 +685,18 @@
             <div class="background-option active" data-bg="default" data-name="Bedroom" 
                  style="background-image: url('https://cdn.prod.website-files.com/6740d85c4e3daeef29a89470/6887cb12ef6fe7c6ece80324_anime-bedroom-uidy4uvprhbhg84q.jpg')"
                  onclick="setBackground('default')"></div>
-            <div class="background-option" data-bg="forest" data-name="Gym"
+            <div class="background-option" data-bg="gym" data-name="Gym"
                  style="background-image: url('https://cdn.prod.website-files.com/6740d85c4e3daeef29a89470/6887f8d1a34ef0893b9b7841_3d179b3d1e4dd193869406730925be71.jpg')"
-                 onclick="setBackground('forest')"></div>
-            <div class="background-option" data-bg="castle" data-name="Future Bonk"
+                 onclick="setBackground('gym')"></div>
+            <div class="background-option" data-bg="future" data-name="Future Bonk"
                  style="background-image: url('https://cdn.prod.website-files.com/6740d85c4e3daeef29a89470/6887f8d150076a190352ea5d_1e993a515f75ec9addd4c36eb6a74640%20(1)%20(1).png')"
-                 onclick="setBackground('castle')"></div>
-            <div class="background-option" data-bg="garden" data-name="The Streets"
+                 onclick="setBackground('future')"></div>
+            <div class="background-option" data-bg="streets" data-name="The Streets"
                  style="background-image: url('https://cdn.prod.website-files.com/6740d85c4e3daeef29a89470/6887f8fbcbc040107d95c8c3_bnef3fhuqm261%20(2).png')"
-                 onclick="setBackground('garden')"></div>
-            <div class="background-option" data-bg="night" data-name="Bonk"
+                 onclick="setBackground('streets')"></div>
+            <div class="background-option" data-bg="bonk" data-name="Bonk"
                  style="background-image: url('https://cdn.prod.website-files.com/6740d85c4e3daeef29a89470/6887f9169ce3ce8776ce421c_51lJBZ66FTL.jpg')"
-                 onclick="setBackground('night')"></div>
+                 onclick="setBackground('bonk')"></div>
         </div>
 
         <!-- Background -->
@@ -763,13 +763,13 @@
             currentBackground = 'default';
         }
 
-        // Available backgrounds - Fixed scope
+        // Available backgrounds - Updated with custom backgrounds
         const backgrounds = {
             default: 'https://cdn.prod.website-files.com/6740d85c4e3daeef29a89470/6887cb12ef6fe7c6ece80324_anime-bedroom-uidy4uvprhbhg84q.jpg',
-            forest: 'https://images.unsplash.com/photo-1441974231531-c6227db76b6e?w=1920&h=1080&fit=crop',
-            castle: 'https://images.unsplash.com/photo-1520637836862-4d197d17c93a?w=1920&h=1080&fit=crop',
-            garden: 'https://images.unsplash.com/photo-1416879595882-3373a0480b5b?w=1920&h=1080&fit=crop',
-            night: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=1920&h=1080&fit=crop'
+            gym: 'https://cdn.prod.website-files.com/6740d85c4e3daeef29a89470/6887f8d1a34ef0893b9b7841_3d179b3d1e4dd193869406730925be71.jpg',
+            future: 'https://cdn.prod.website-files.com/6740d85c4e3daeef29a89470/6887f8d150076a190352ea5d_1e993a515f75ec9addd4c36eb6a74640%20(1)%20(1).png',
+            streets: 'https://cdn.prod.website-files.com/6740d85c4e3daeef29a89470/6887f8fbcbc040107d95c8c3_bnef3fhuqm261%20(2).png',
+            bonk: 'https://cdn.prod.website-files.com/6740d85c4e3daeef29a89470/6887f9169ce3ce8776ce421c_51lJBZ66FTL.jpg'
         };
 
         const canvas = document.getElementById('characterCanvas');
