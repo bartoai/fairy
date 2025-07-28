@@ -347,8 +347,8 @@
 
             // Camera setup for visual novel style
             camera = new THREE.PerspectiveCamera(45, canvas.clientWidth / canvas.clientHeight, 0.1, 1000);
-            camera.position.set(0, 1.2, 2.5); // Position to show from waist up
-            camera.lookAt(0, 1.2, 0);
+            camera.position.set(0, 0.8, 1.8); // Lower camera to show face
+            camera.lookAt(0, 0.8, 0);
 
             // Renderer setup
             renderer = new THREE.WebGLRenderer({ 
@@ -389,8 +389,8 @@
                     fairy = gltf.scene;
                     
                     // Scale and position for visual novel style
-                    fairy.scale.set(1.5, 1.5, 1.5);
-                    fairy.position.set(0, 0, 0);
+                    fairy.scale.set(2.5, 2.5, 2.5); // Make her bigger
+                    fairy.position.set(0, -0.5, 0); // Move her down to show face
                     
                     // Enable shadows
                     fairy.traverse(function(child) {
