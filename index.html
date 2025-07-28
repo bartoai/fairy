@@ -691,17 +691,53 @@
                 messageDiv.appendChild(voiceButton);
                 
                 dialogueText.appendChild(messageDiv);
-                typeMessage(messageDiv, text, () => {
-                    if (audioAutoPlay) {
-                        playVoiceAuto(text);
-                    }
-                });
+                
+                // If auto-play is enabled, prepare audio first then type
+                if (audioAutoPlay) {
+                    prepareAndPlayTogether(messageDiv, text);
+                } else {
+                    // If no auto-play, just type normally
+                    typeMessage(messageDiv, text);
+                }
             } else {
                 messageDiv.textContent = text;
                 dialogueText.appendChild(messageDiv);
             }
             
             dialogueText.scrollTop = dialogueText.scrollHeight;
+        }
+
+        async function prepareAndPlayTogether(element, text) {
+            try {
+                // Show loading indicator while preparing audio
+                element.textContent = '...';
+                
+                // Prepare the audio first
+                const response = await fetch('/api/tts', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ text: text })
+                });
+
+                if (response.ok) {
+                    const data = await response.json();
+                    const audio = new Audio();
+                    audio.src = `data:audio/mpeg;base64,${data.audio}`;
+                    
+                    // Once audio is ready, start typing and playing together
+                    audio.play().catch(e => console.log('Auto-play failed:', e));
+                    typeMessage(element, text);
+                } else {
+                    // If audio fails, just type normally
+                    typeMessage(element, text);
+                }
+            } catch (error) {
+                console.log('Audio preparation failed:', error);
+                // If audio fails, just type normally
+                typeMessage(element, text);
+            }
         }
 
         function typeMessage(element, text, callback, speed = 30) {
@@ -720,29 +756,6 @@
             }
             
             typeChar();
-        }
-
-        async function playVoiceAuto(text) {
-            if (!audioAutoPlay) return;
-            
-            try {
-                const response = await fetch('/api/tts', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify({ text: text })
-                });
-
-                if (response.ok) {
-                    const data = await response.json();
-                    const audio = new Audio();
-                    audio.src = `data:audio/mpeg;base64,${data.audio}`;
-                    audio.play().catch(e => console.log('Auto-play failed:', e));
-                }
-            } catch (error) {
-                console.log('Auto-play TTS failed:', error);
-            }
         }
 
         async function playVoice(text, button) {
