@@ -181,11 +181,11 @@
 
         .social-icon.bonk {
             background-image: url('https://cdn.prod.website-files.com/6740d85c4e3daeef29a89470/68433c066e047e6e44c898da_1ed8c36b-4a8e-6394-9e58-9a8c204e7b9e.png');
-            background-size: 85%; /* Made the bonk logo slightly smaller */
+            background-size: 85%;
         }
 
         .social-icon:hover {
-            background: rgba(0, 50, 0, 0.9);
+            background-color: rgba(0, 50, 0, 0.9);
             border-color: #00ff00;
             transform: scale(1.05);
         }
@@ -193,17 +193,18 @@
         /* Character model container */
         .character-container {
             position: absolute;
-            bottom: 220px; /* Adjusted for new text box positioning */
+            bottom: 220px;
             left: 50%;
             transform: translateX(-50%);
-            width: 1700px; /* Made extra wide to show full wings */
-            height: 700px; /* Made taller */
+            width: 1700px;
+            height: 700px;
             z-index: 5;
         }
 
         .character-canvas {
             width: 100%;
             height: 100%;
+            display: none;
         }
 
         .character-loading {
@@ -277,6 +278,7 @@
         .message {
             margin-bottom: 15px;
             padding: 8px 0;
+            position: relative;
         }
 
         .message.user {
@@ -408,14 +410,17 @@
         /* Responsive design */
         @media (max-width: 768px) {
             .character-container {
-                width: 400px; /* Smaller on mobile */
+                width: 400px;
                 height: 500px;
-                bottom: 240px; /* Adjust for bigger text box on mobile */
+                bottom: 230px;
             }
 
             .text-box {
-                height: 220px;
+                width: 95%;
+                max-width: none;
+                height: 200px;
                 padding: 15px;
+                bottom: 10px;
             }
 
             .social-icon {
@@ -447,61 +452,96 @@
     </style>
 </head>
 <body>
-    <!-- Background -->
-    <div class="background"></div>
-
-    <!-- Social Media Icons -->
-    <div class="social-icons left">
-        <div class="social-icon twitter" onclick="window.open('https://twitter.com', '_blank')">
+    <!-- Loading Screen -->
+    <div id="loadingScreen" class="loading-screen">
+        <img src="https://cdn.prod.website-files.com/6740d85c4e3daeef29a89470/6887e1da56935b68a476dc1c_BONKARA-28-07-2025.gif" 
+             alt="Bonkara" class="bonkara-logo">
+        
+        <img src="https://cdn.prod.website-files.com/6740d85c4e3daeef29a89470/6887e196a6ca43c1525219f5_ChatGPT%20Image%20Jul%2028%2C%202025%2C%2009_46_08%20PM.png" 
+             alt="Bonkara Portrait" class="floating-image">
+        
+        <button class="enter-button" onclick="enterSite()">
+            Enter at Your Own Risk
+        </button>
+        
+        <div class="warning-text">
+            18+ Content • Audio will auto-play
         </div>
     </div>
 
-    <div class="social-icons right">
-        <div class="social-icon bonk" onclick="window.open('#', '_blank')">
-        </div>
-    </div>
+    <!-- Main Content -->
+    <div id="mainContent" class="main-content">
+        <!-- Background -->
+        <div class="background"></div>
 
-    <!-- Character Model -->
-    <div class="character-container">
-        <canvas id="characterCanvas" class="character-canvas"></canvas>
-        <div id="characterLoading" class="character-loading">
-            <div>Loading Luna...</div>
-            <div class="loading-dots"></div>
-        </div>
-    </div>
-
-    <!-- Text Box -->
-    <div class="text-box">
-        <div class="character-name">Bonkara</div>
-        <div class="dialogue-text" id="dialogueText">
-            <div class="message fairy">
-                Welcome to my magical realm! I'm Bonkara, and I've been waiting for someone like you to visit. 
-                The forest spirits whisper that you have questions burning in your heart. What brings you to my domain today?
+        <!-- Social Media Icons -->
+        <div class="social-icons left">
+            <div class="social-icon twitter" onclick="window.open('https://twitter.com', '_blank')">
             </div>
         </div>
-        <div class="input-container">
-            <span class="input-prompt">></span>
-            <input type="text" class="message-input" id="messageInput" placeholder="Type your message..." maxlength="500">
-            <button class="send-button" id="sendButton" onclick="sendMessage()">Send</button>
+
+        <div class="social-icons right">
+            <div class="social-icon bonk" onclick="window.open('#', '_blank')">
+            </div>
+        </div>
+
+        <!-- Character Model -->
+        <div class="character-container">
+            <canvas id="characterCanvas" class="character-canvas"></canvas>
+            <div id="characterLoading" class="character-loading">
+                <div>Loading Bonkara...</div>
+                <div class="loading-dots"></div>
+            </div>
+        </div>
+
+        <!-- Text Box -->
+        <div class="text-box">
+            <div class="character-name">Bonkara</div>
+            <div class="dialogue-text" id="dialogueText">
+                <div class="message fairy">
+                    Welcome to my magical realm! I'm Bonkara, and I've been waiting for someone like you to visit. 
+                    The forest spirits whisper that you have questions burning in your heart. What brings you to my domain today?
+                </div>
+            </div>
+            <div class="input-container">
+                <span class="input-prompt">></span>
+                <input type="text" class="message-input" id="messageInput" placeholder="Type your message..." maxlength="500">
+                <button class="send-button" id="sendButton" onclick="sendMessage()">Send</button>
+            </div>
         </div>
     </div>
 
     <script>
-        // Three.js setup for character model
+        // Global variables
         let scene, camera, renderer, fairy, mixer;
+        let audioAutoPlay = false;
         const canvas = document.getElementById('characterCanvas');
         const loadingDiv = document.getElementById('characterLoading');
+        const dialogueText = document.getElementById('dialogueText');
+        const messageInput = document.getElementById('messageInput');
+        const sendButton = document.getElementById('sendButton');
 
+        // Enter site function
+        function enterSite() {
+            audioAutoPlay = true;
+            
+            const loadingScreen = document.getElementById('loadingScreen');
+            const mainContent = document.getElementById('mainContent');
+            
+            loadingScreen.classList.add('hidden');
+            mainContent.classList.add('visible');
+            
+            setTimeout(initThreeJS, 500);
+        }
+
+        // Three.js setup
         function initThreeJS() {
-            // Scene setup
             scene = new THREE.Scene();
 
-            // Camera setup for visual novel style
             camera = new THREE.PerspectiveCamera(45, canvas.clientWidth / canvas.clientHeight, 0.1, 1000);
-            camera.position.set(0, 1.5, 2.2); // Moved camera up to show face
-            camera.lookAt(0, 1.2, 0); // Looking at upper body area
+            camera.position.set(0, 1.5, 2.2);
+            camera.lookAt(0, 1.2, 0);
 
-            // Renderer setup
             renderer = new THREE.WebGLRenderer({ 
                 canvas: canvas, 
                 antialias: true, 
@@ -512,7 +552,6 @@
             renderer.shadowMap.enabled = true;
             renderer.shadowMap.type = THREE.PCFSoftShadowMap;
 
-            // Lighting setup for character
             const ambientLight = new THREE.AmbientLight(0xffffff, 0.8);
             scene.add(ambientLight);
 
@@ -525,13 +564,11 @@
             fillLight.position.set(-2, 1, 1);
             scene.add(fillLight);
 
-            // Load the fairy model
             loadFairyModel();
         }
 
         function loadFairyModel() {
             const loader = new THREE.GLTFLoader();
-            // Using jsdelivr CDN which supports CORS for GitHub files
             const modelUrl = 'https://cdn.jsdelivr.net/gh/bartoai/fairy@main/fairywoman.glb';
             
             loader.load(
@@ -539,11 +576,9 @@
                 function(gltf) {
                     fairy = gltf.scene;
                     
-                    // Scale and position for visual novel style
-                    fairy.scale.set(2.0, 2.0, 2.0); // Made her a bit smaller
-                    fairy.position.set(0, -2.7, 0); // Adjusted position to 2.7
+                    fairy.scale.set(2.0, 2.0, 2.0);
+                    fairy.position.set(0, -2.7, 0);
                     
-                    // Enable shadows
                     fairy.traverse(function(child) {
                         if (child.isMesh) {
                             child.castShadow = true;
@@ -553,11 +588,9 @@
                     
                     scene.add(fairy);
                     
-                    // Hide loading and show model
                     loadingDiv.style.display = 'none';
                     canvas.style.display = 'block';
                     
-                    // Setup animations
                     if (gltf.animations && gltf.animations.length > 0) {
                         mixer = new THREE.AnimationMixer(fairy);
                         const action = mixer.clipAction(gltf.animations[0]);
@@ -585,10 +618,9 @@
             requestAnimationFrame(animate);
             
             if (mixer) {
-                mixer.update(0.008); // Slowed down animation (was 0.016)
+                mixer.update(0.008);
             }
             
-            // Subtle breathing animation if no animations
             if (fairy && !mixer) {
                 fairy.position.y = Math.sin(Date.now() * 0.001) * 0.02;
             }
@@ -596,7 +628,6 @@
             renderer.render(scene, camera);
         }
 
-        // Handle window resize
         function onWindowResize() {
             const container = canvas.parentElement;
             camera.aspect = container.clientWidth / container.clientHeight;
@@ -606,14 +637,7 @@
 
         window.addEventListener('resize', onWindowResize);
 
-        // Don't initialize Three.js on load anymore - wait for user interaction
-        // window.addEventListener('load', initThreeJS);
-
         // Chat functionality
-        const dialogueText = document.getElementById('dialogueText');
-        const messageInput = document.getElementById('messageInput');
-        const sendButton = document.getElementById('sendButton');
-
         messageInput.addEventListener('keypress', function(e) {
             if (e.key === 'Enter') {
                 sendMessage();
@@ -624,17 +648,41 @@
             const message = messageInput.value.trim();
             if (!message) return;
 
-            // Add user message
             addMessage(message, 'user');
             messageInput.value = '';
             sendButton.disabled = true;
             sendButton.innerHTML = 'Sending<span class="loading-dots"></span>';
 
             try {
-                // Simulate API call - replace with actual Anthropic API
-                await simulateAPICall(message);
+                const response = await fetch('/api/chat', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        message: message,
+                        character: 'bonkara'
+                    })
+                });
+
+                if (!response.ok) {
+                    throw new Error('API request failed');
+                }
+
+                const data = await response.json();
+                addMessage(data.response, 'fairy');
             } catch (error) {
-                addMessage("*The fairy's magic flickers* Something went wrong... please try again!", 'fairy');
+                console.error('API Error:', error);
+                const fallbackResponses = [
+                    "How fascinating! The ancient trees have been whispering about visitors like you. There's something special about your energy that draws the forest spirits near.",
+                    "That question carries the scent of adventure! In my realm, such thoughts bloom into magical possibilities. I can sense great potential within you.",
+                    "Oh my! You remind me of the wise spirits who dwell beyond the crystal caves. Your curiosity sparkles brighter than starlight.",
+                    "The moonlight reveals that you seek something deeper than words can express. I can feel the longing in your heart, dear visitor.",
+                    "Your energy resonates with the harmony of the enchanted grove. Tell me more about what brings you to my mystical domain, wanderer."
+                ];
+                
+                const randomResponse = fallbackResponses[Math.floor(Math.random() * fallbackResponses.length)];
+                addMessage(randomResponse, 'fairy');
             }
 
             sendButton.disabled = false;
@@ -646,18 +694,19 @@
             messageDiv.className = `message ${sender}`;
             
             if (sender === 'fairy') {
-                // Add voice button for fairy messages
                 const voiceButton = document.createElement('button');
                 voiceButton.className = 'voice-button';
                 voiceButton.textContent = '🔊';
                 voiceButton.onclick = () => playVoice(text, voiceButton);
                 messageDiv.appendChild(voiceButton);
                 
-                // Add typing effect for fairy messages
                 dialogueText.appendChild(messageDiv);
-                typeMessage(messageDiv, text);
+                typeMessage(messageDiv, text, () => {
+                    if (audioAutoPlay) {
+                        playVoiceAuto(text);
+                    }
+                });
             } else {
-                // User messages appear immediately
                 messageDiv.textContent = text;
                 dialogueText.appendChild(messageDiv);
             }
@@ -665,8 +714,23 @@
             dialogueText.scrollTop = dialogueText.scrollHeight;
         }
 
-        /* Auto-play functionality */
-        let audioAutoPlay = false;
+        function typeMessage(element, text, callback, speed = 30) {
+            let i = 0;
+            element.textContent = '';
+            
+            function typeChar() {
+                if (i < text.length) {
+                    element.textContent += text.charAt(i);
+                    i++;
+                    dialogueText.scrollTop = dialogueText.scrollHeight;
+                    setTimeout(typeChar, speed);
+                } else if (callback) {
+                    callback();
+                }
+            }
+            
+            typeChar();
+        }
 
         async function playVoiceAuto(text) {
             if (!audioAutoPlay) return;
@@ -690,6 +754,8 @@
                 console.log('Auto-play TTS failed:', error);
             }
         }
+
+        async function playVoice(text, button) {
             if (button.disabled) return;
             
             button.disabled = true;
@@ -711,7 +777,6 @@
 
                 const data = await response.json();
                 
-                // Create audio element and play
                 const audio = new Audio();
                 audio.src = `data:audio/mpeg;base64,${data.audio}`;
                 
@@ -737,79 +802,6 @@
                 button.textContent = '🔊';
             }
         }
-
-        function typeMessage(element, text, speed = 30) {
-            let i = 0;
-            element.textContent = '';
-            
-            function typeChar() {
-                if (i < text.length) {
-                    element.textContent += text.charAt(i);
-                    i++;
-                    dialogueText.scrollTop = dialogueText.scrollHeight;
-                    setTimeout(typeChar, speed);
-                }
-            }
-            
-            typeChar();
-        }
-
-        // Simulate API response (replace with actual Anthropic integration)
-        async function simulateAPICall(userMessage) {
-            // Replace this with actual API call
-            try {
-                const response = await fetch('/api/chat', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify({
-                        message: userMessage,
-                        character: 'bonkara'
-                    })
-                });
-
-                if (!response.ok) {
-                    throw new Error('API request failed');
-                }
-
-                const data = await response.json();
-                addMessage(data.response, 'fairy');
-            } catch (error) {
-                console.error('API Error:', error);
-                // Fallback responses
-                const fallbackResponses = [
-                    "How fascinating! The ancient trees have been whispering about visitors like you. There's something special about your energy that draws the forest spirits near.",
-                    "That question carries the scent of adventure! In my realm, such thoughts bloom into magical possibilities. I can sense great potential within you.",
-                    "Oh my! You remind me of the wise spirits who dwell beyond the crystal caves. Your curiosity sparkles brighter than starlight.",
-                    "The moonlight reveals that you seek something deeper than words can express. I can feel the longing in your heart, dear visitor.",
-                    "Your energy resonates with the harmony of the enchanted grove. Tell me more about what brings you to my mystical domain, wanderer."
-                ];
-                
-                const randomResponse = fallbackResponses[Math.floor(Math.random() * fallbackResponses.length)];
-                addMessage(randomResponse, 'fairy');
-            }
-        }
-
-        // TODO: Replace with actual Anthropic API integration
-        /*
-        async function callAnthropicAPI(message) {
-            const response = await fetch('/api/chat', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({
-                    message: message,
-                    character: 'fairy',
-                    style: 'mystical'
-                })
-            });
-            
-            const data = await response.json();
-            return data.response;
-        }
-        */
     </script>
 </body>
 </html>
