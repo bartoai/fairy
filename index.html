@@ -4,6 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Chat with Bonkara</title>
+    <link rel="icon" type="image/png" href="https://cdn.prod.website-files.com/6740d85c4e3daeef29a89470/6887e196a6ca43c1525219f5_ChatGPT%20Image%20Jul%2028%2C%202025%2C%2009_46_08%20PM.png">
+    <link rel="shortcut icon" type="image/png" href="https://cdn.prod.website-files.com/6740d85c4e3daeef29a89470/6887e196a6ca43c1525219f5_ChatGPT%20Image%20Jul%2028%2C%202025%2C%2009_46_08%20PM.png">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/GLTFLoader.js"></script>
     <style>
@@ -21,6 +23,106 @@
             overflow: hidden;
             background: #000;
             position: relative;
+        }
+
+        /* Loading Screen Styles */
+        .loading-screen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, #1a0033 0%, #330066 50%, #1a0033 100%);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            opacity: 1;
+            transition: opacity 1s ease;
+        }
+
+        .loading-screen.hidden {
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        .bonkara-logo {
+            width: 400px;
+            height: auto;
+            margin-bottom: 30px;
+            animation: logoGlow 2s ease-in-out infinite alternate;
+        }
+
+        @keyframes logoGlow {
+            from { filter: drop-shadow(0 0 10px #ff00ff); }
+            to { filter: drop-shadow(0 0 30px #ff00ff); }
+        }
+
+        .floating-image {
+            width: 300px;
+            height: 300px;
+            border-radius: 20px;
+            margin-bottom: 40px;
+            animation: float 3s ease-in-out infinite;
+            box-shadow: 0 0 50px rgba(255, 0, 255, 0.3);
+            transition: transform 0.3s ease;
+        }
+
+        .floating-image:hover {
+            transform: scale(1.05);
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-20px); }
+        }
+
+        .enter-button {
+            background: linear-gradient(45deg, #ff0066, #ff3399);
+            border: 2px solid #ff00ff;
+            color: white;
+            font-family: 'Courier Prime', monospace;
+            font-size: 18px;
+            font-weight: bold;
+            padding: 15px 40px;
+            border-radius: 15px;
+            cursor: pointer;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            transition: all 0.3s ease;
+            box-shadow: 0 0 30px rgba(255, 0, 255, 0.5);
+            animation: buttonPulse 2s ease-in-out infinite;
+        }
+
+        .enter-button:hover {
+            background: linear-gradient(45deg, #ff3399, #ff66cc);
+            transform: translateY(-3px);
+            box-shadow: 0 10px 40px rgba(255, 0, 255, 0.7);
+        }
+
+        @keyframes buttonPulse {
+            0%, 100% { box-shadow: 0 0 30px rgba(255, 0, 255, 0.5); }
+            50% { box-shadow: 0 0 50px rgba(255, 0, 255, 0.8); }
+        }
+
+        .warning-text {
+            color: #ff6666;
+            font-size: 14px;
+            margin-top: 20px;
+            text-align: center;
+            opacity: 0.8;
+            letter-spacing: 1px;
+        }
+
+        /* Main content hidden initially */
+        .main-content {
+            opacity: 0;
+            transition: opacity 1s ease;
+        }
+
+        .main-content.visible {
+            opacity: 1;
         }
 
         /* Background image container */
@@ -188,6 +290,41 @@
 
         .message.fairy {
             color: #ffffff;
+            position: relative;
+        }
+
+        .voice-button {
+            position: absolute;
+            right: 10px;
+            top: 8px;
+            background: transparent;
+            border: 1px solid #00ff00;
+            color: #00ff00;
+            padding: 4px 8px;
+            font-size: 12px;
+            cursor: pointer;
+            border-radius: 4px;
+            font-family: 'Courier Prime', monospace;
+            transition: all 0.3s ease;
+        }
+
+        .voice-button:hover:not(:disabled) {
+            background: rgba(0, 255, 0, 0.1);
+        }
+
+        .voice-button:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .voice-button.playing {
+            background: rgba(0, 255, 0, 0.2);
+            animation: pulse 1s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 0.7; }
+            50% { opacity: 1; }
         }
 
         .typing-indicator {
@@ -468,7 +605,9 @@
         }
 
         window.addEventListener('resize', onWindowResize);
-        window.addEventListener('load', initThreeJS);
+
+        // Don't initialize Three.js on load anymore - wait for user interaction
+        // window.addEventListener('load', initThreeJS);
 
         // Chat functionality
         const dialogueText = document.getElementById('dialogueText');
@@ -507,6 +646,13 @@
             messageDiv.className = `message ${sender}`;
             
             if (sender === 'fairy') {
+                // Add voice button for fairy messages
+                const voiceButton = document.createElement('button');
+                voiceButton.className = 'voice-button';
+                voiceButton.textContent = '🔊';
+                voiceButton.onclick = () => playVoice(text, voiceButton);
+                messageDiv.appendChild(voiceButton);
+                
                 // Add typing effect for fairy messages
                 dialogueText.appendChild(messageDiv);
                 typeMessage(messageDiv, text);
@@ -517,6 +663,79 @@
             }
             
             dialogueText.scrollTop = dialogueText.scrollHeight;
+        }
+
+        /* Auto-play functionality */
+        let audioAutoPlay = false;
+
+        async function playVoiceAuto(text) {
+            if (!audioAutoPlay) return;
+            
+            try {
+                const response = await fetch('/api/tts', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ text: text })
+                });
+
+                if (response.ok) {
+                    const data = await response.json();
+                    const audio = new Audio();
+                    audio.src = `data:audio/mpeg;base64,${data.audio}`;
+                    audio.play().catch(e => console.log('Auto-play failed:', e));
+                }
+            } catch (error) {
+                console.log('Auto-play TTS failed:', error);
+            }
+        }
+            if (button.disabled) return;
+            
+            button.disabled = true;
+            button.classList.add('playing');
+            button.textContent = '⏸️';
+            
+            try {
+                const response = await fetch('/api/tts', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ text: text })
+                });
+
+                if (!response.ok) {
+                    throw new Error('TTS request failed');
+                }
+
+                const data = await response.json();
+                
+                // Create audio element and play
+                const audio = new Audio();
+                audio.src = `data:audio/mpeg;base64,${data.audio}`;
+                
+                audio.onended = () => {
+                    button.disabled = false;
+                    button.classList.remove('playing');
+                    button.textContent = '🔊';
+                };
+                
+                audio.onerror = () => {
+                    button.disabled = false;
+                    button.classList.remove('playing');
+                    button.textContent = '🔊';
+                    console.error('Audio playback failed');
+                };
+                
+                await audio.play();
+                
+            } catch (error) {
+                console.error('Voice generation failed:', error);
+                button.disabled = false;
+                button.classList.remove('playing');
+                button.textContent = '🔊';
+            }
         }
 
         function typeMessage(element, text, speed = 30) {
