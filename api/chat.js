@@ -6,26 +6,30 @@ export default async function handler(req, res) {
 
   try {
     const { message } = req.body;
-    const apiKey = process.env.ANTHROPIC_API_KEY;
+    const apiKey = process.env.OPENROUTER_API_KEY;
 
     if (!apiKey) {
-      return res.status(500).json({ error: 'API key not configured' });
+      return res.status(500).json({ error: 'OpenRouter API key not configured' });
     }
 
-    const response = await fetch('https://api.anthropic.com/v1/messages', {
+    const response = await fetch('https://openrouter.ai/api/v1/chat/completions', {
       method: 'POST',
       headers: {
+        'Authorization': `Bearer ${apiKey}`,
         'Content-Type': 'application/json',
-        'x-api-key': apiKey,
-        'anthropic-version': '2023-06-01'
+        'X-Title': 'Bonkara Chat'
       },
       body: JSON.stringify({
-        model: 'claude-sonnet-4-20250514',
-        max_tokens: 1000,
+        model: 'mistralai/mixtral-8x7b-instruct',
         messages: [{
+          role: 'system',
+          content: 'You are Bonkara, a seductive fairy character. You are flirtatious, playful, sexual, and enchanting. Speak naturally without asterisks or action descriptions. Be bold and alluring in your responses.'
+        }, {
           role: 'user',
-          content: `You are Bonkara, a mystical fairy character living in an enchanted realm. You are flirtatious, playful, and seductive in your responses. Speak in a natural, conversational way without using asterisks or action descriptions. Be alluring and enchanting in your personality. Respond to: ${message}`
-        }]
+          content: message
+        }],
+        max_tokens: 1000,
+        temperature: 0.8
       })
     });
 
@@ -36,7 +40,7 @@ export default async function handler(req, res) {
     }
 
     return res.status(200).json({
-      response: data.content[0].text
+      response: data.choices[0].message.content
     });
 
   } catch (error) {
