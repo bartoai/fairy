@@ -14,7 +14,7 @@ export default async function handler(req, res) {
 
     // You'll need to replace this with your chosen voice ID
     // Popular female voices: Rachel, Bella, Elli, etc.
-    const voiceId = 'EXAVITQu4vr4xnSDxMaL'; // Bella - change this to your preferred voice
+    const voiceId = 'XW70ikSsadUbinwLMZ5w'; // Your chosen voice
 
     const response = await fetch(`https://api.elevenlabs.io/v1/text-to-speech/${voiceId}`, {
       method: 'POST',
