@@ -79,11 +79,11 @@
         /* Character model container */
         .character-container {
             position: absolute;
-            bottom: 200px;
+            bottom: 150px; /* Moved up to make room for bigger window */
             left: 50%;
             transform: translateX(-50%);
-            width: 400px;
-            height: 500px;
+            width: 600px; /* Made wider */
+            height: 700px; /* Made taller */
             z-index: 5;
         }
 
@@ -255,9 +255,9 @@
         /* Responsive design */
         @media (max-width: 768px) {
             .character-container {
-                width: 300px;
-                height: 400px;
-                bottom: 220px;
+                width: 400px; /* Smaller on mobile */
+                height: 500px;
+                bottom: 240px; /* Adjust for bigger text box on mobile */
             }
 
             .text-box {
@@ -347,8 +347,8 @@
 
             // Camera setup for visual novel style
             camera = new THREE.PerspectiveCamera(45, canvas.clientWidth / canvas.clientHeight, 0.1, 1000);
-            camera.position.set(0, 0.8, 1.8); // Lower camera to show face
-            camera.lookAt(0, 0.8, 0);
+            camera.position.set(0, 1.5, 2.2); // Moved camera up to show face
+            camera.lookAt(0, 1.2, 0); // Looking at upper body area
 
             // Renderer setup
             renderer = new THREE.WebGLRenderer({ 
@@ -389,8 +389,8 @@
                     fairy = gltf.scene;
                     
                     // Scale and position for visual novel style
-                    fairy.scale.set(2.5, 2.5, 2.5); // Make her bigger
-                    fairy.position.set(0, -0.5, 0); // Move her down to show face
+                    fairy.scale.set(2.5, 2.5, 2.5); // Keep her big
+                    fairy.position.set(0, -0.8, 0); // Move her down more to center her face
                     
                     // Enable shadows
                     fairy.traverse(function(child) {
