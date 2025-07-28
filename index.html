@@ -389,8 +389,8 @@
                     fairy = gltf.scene;
                     
                     // Scale and position for visual novel style
-                    fairy.scale.set(2.5, 2.5, 2.5); // Keep her big
-                    fairy.position.set(0, -4.5, 0); // Move her way down to show face
+                    fairy.scale.set(2.0, 2.0, 2.0); // Made her a bit smaller
+                    fairy.position.set(0, -3.0, 0); // Adjusted position
                     
                     // Enable shadows
                     fairy.traverse(function(child) {
@@ -434,7 +434,7 @@
             requestAnimationFrame(animate);
             
             if (mixer) {
-                mixer.update(0.016);
+                mixer.update(0.008); // Slowed down animation (was 0.016)
             }
             
             // Subtle breathing animation if no animations
