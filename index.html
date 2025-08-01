@@ -76,8 +76,8 @@
         }
 
         .floating-window {
-            width: 250px;
-            height: 200px;
+            width: 280px;
+            height: 250px;
             background: rgba(255, 255, 255, 0.1);
             border: 1px solid rgba(0, 255, 136, 0.3);
             border-radius: 12px;
@@ -107,11 +107,22 @@
         .floating-window.active {
             border-color: #00ff88;
             box-shadow: 0 0 20px rgba(0, 255, 136, 0.4);
+            cursor: pointer;
+        }
+
+        .floating-window.active:hover {
+            transform: scale(1.08);
+            box-shadow: 0 15px 40px rgba(0, 255, 136, 0.6);
+        }
+
+        .floating-window:not(.active) {
+            opacity: 0.7;
+            cursor: not-allowed;
         }
 
         .window-image {
             width: 100%;
-            height: 120px;
+            height: 160px;
             border-radius: 8px;
             object-fit: cover;
             margin-bottom: 10px;
@@ -669,7 +680,8 @@
             }
         }
     </style>
-    <body>
+</head>
+<body>
     <!-- Grok Loading Screen -->
     <div id="loadingScreen" class="loading-screen">
         <div class="grok-header">
@@ -678,39 +690,35 @@
         </div>
 
         <div class="floating-windows">
-            <div class="floating-window active">
-                <img src="https://cdn.prod.website-files.com/6740d85c4e3daeef29a89470/6887e196a6ca43c1525219f5_ChatGPT%20Image%20Jul%2028%2C%202025%2C%2009_46_08%20PM.png" 
-                     alt="Bonkara" class="window-image">
-                <div class="window-name">BONKARA</div>
-                <div class="window-status active">Neural Network Active</div>
-            </div>
-
             <div class="floating-window">
-                <img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=250&h=120&fit=crop" 
-                     alt="Luna" class="window-image">
-                <div class="window-name">LUNA</div>
+                <img src="https://cdn.prod.website-files.com/6740d85c4e3daeef29a89470/688c38f0fa8c1caa83ab1715_ChatGPT_Image_Aug_1__2025__04_39_33_AM-removebg-preview.png" 
+                     alt="Ani" class="window-image">
+                <div class="window-name">ANI</div>
                 <div class="window-status">Offline</div>
             </div>
 
             <div class="floating-window">
-                <img src="https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=250&h=120&fit=crop" 
-                     alt="Aria" class="window-image">
-                <div class="window-name">ARIA</div>
-                <div class="window-status">Standby Mode</div>
+                <img src="https://cdn.prod.website-files.com/6740d85c4e3daeef29a89470/688c38f0da41a37b7528209a_ChatGPT_Image_Aug_1__2025__04_42_54_AM-removebg-preview.png" 
+                     alt="Rudi" class="window-image">
+                <div class="window-name">RUDI</div>
+                <div class="window-status">Offline</div>
             </div>
 
             <div class="floating-window">
-                <img src="https://images.unsplash.com/photo-1494790108755-2616c9c75b5d?w=250&h=120&fit=crop" 
-                     alt="Nova" class="window-image">
-                <div class="window-name">NOVA</div>
-                <div class="window-status">Maintenance</div>
+                <img src="https://cdn.prod.website-files.com/6740d85c4e3daeef29a89470/688c38f0cffa969068ca3da7_ChatGPT_Image_Aug_1__2025__04_46_28_AM-removebg-preview.png" 
+                     alt="Valentine" class="window-image">
+                <div class="window-name">VALENTINE</div>
+                <div class="window-status">Offline</div>
+            </div>
+
+            <div class="floating-window active" onclick="enterSite()">
+                <img src="https://cdn.prod.website-files.com/6740d85c4e3daeef29a89470/688c3a0a64d23f99c0106e85_ChatGPT_Image_Aug_1__2025__04_52_13_AM-removebg-preview.png" 
+                     alt="Aether" class="window-image">
+                <div class="window-name">AETHER</div>
+                <div class="window-status active">Neural Network Active</div>
             </div>
         </div>
 
-        <button class="access-button" onclick="enterSite()">
-            ACCESS BONKARA
-        </button>
-        
         <div class="grok-warning">
             Experimental AI • Adult Content • Proceed with Caution
         </div>
@@ -1376,4 +1384,3 @@
     </script>
 </body>
 </html>
-</head>
