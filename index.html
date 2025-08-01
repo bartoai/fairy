@@ -184,69 +184,214 @@
         .main-content {
             opacity: 0;
             transition: opacity 1s ease;
+            background: linear-gradient(135deg, #0a0a0a 0%, #1a1a2e 50%, #16213e 100%);
+            height: 100vh;
         }
 
         .main-content.visible {
             opacity: 1;
         }
 
-        .background {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background-image: url('https://cdn.prod.website-files.com/6740d85c4e3daeef29a89470/6887cb12ef6fe7c6ece80324_anime-bedroom-uidy4uvprhbhg84q.jpg');
-            background-size: cover;
-            background-position: center;
-            background-repeat: no-repeat;
-            z-index: 1;
-        }
-
-        /* Social media icons */
-        .social-icons {
+        /* Testing Interface Header */
+        .testing-header {
             position: absolute;
             top: 20px;
-            z-index: 10;
-        }
-
-        .social-icons.left {
             left: 20px;
+            right: 20px;
+            background: rgba(0, 0, 0, 0.8);
+            border: 1px solid rgba(0, 255, 136, 0.3);
+            border-radius: 8px;
+            padding: 15px 20px;
+            z-index: 15;
+            backdrop-filter: blur(10px);
         }
 
-        .social-icon {
-            width: 80px;
-            height: 80px;
-            background: rgba(0, 0, 0, 0.8);
-            border: 2px solid #333;
-            border-radius: 8px;
+        .testing-title {
+            color: #00ff88;
+            font-size: 18px;
+            font-weight: bold;
+            margin-bottom: 5px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .testing-subtitle {
+            color: #8892b0;
+            font-size: 12px;
+            opacity: 0.8;
+        }
+
+        .testing-status {
+            position: absolute;
+            right: 20px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #00ff88;
+            font-size: 12px;
             display: flex;
             align-items: center;
-            justify-content: center;
+            gap: 8px;
+        }
+
+        .status-dot {
+            width: 8px;
+            height: 8px;
+            background: #00ff88;
+            border-radius: 50%;
+            animation: pulse 2s infinite;
+        }
+
+        /* Testing Controls Panel */
+        .testing-controls {
+            position: fixed;
+            left: 20px;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 280px;
+            background: rgba(0, 0, 0, 0.9);
+            border: 1px solid rgba(0, 255, 136, 0.3);
+            border-radius: 8px;
+            padding: 20px;
+            z-index: 20;
+            backdrop-filter: blur(15px);
+        }
+
+        .controls-title {
+            color: #00ff88;
+            font-size: 16px;
+            font-weight: bold;
+            margin-bottom: 20px;
+            text-align: center;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            border-bottom: 1px solid rgba(0, 255, 136, 0.2);
+            padding-bottom: 10px;
+        }
+
+        .control-section {
+            margin-bottom: 25px;
+        }
+
+        .section-label {
+            color: #8892b0;
+            font-size: 12px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 10px;
+            opacity: 0.8;
+        }
+
+        .control-button {
+            width: 100%;
+            background: transparent;
+            border: 1px solid rgba(0, 255, 136, 0.4);
+            color: #00ff88;
+            padding: 10px 15px;
+            margin-bottom: 8px;
+            border-radius: 4px;
+            font-family: 'Courier Prime', monospace;
+            font-size: 12px;
             cursor: pointer;
             transition: all 0.3s ease;
-            margin-bottom: 10px;
-            background-size: cover;
-            background-position: center;
-            background-repeat: no-repeat;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
         }
 
-        .social-icon.twitter {
-            background-image: url('https://cdn.prod.website-files.com/6740d85c4e3daeef29a89470/688401711f7c1c43849d13a6_HIMACZhOn7YJ71dTu-actor-2fSSfmZramPBO73OK-iBihnF3pbp-dexpng%20(2).png');
+        .control-button:hover {
+            background: rgba(0, 255, 136, 0.1);
+            border-color: #00ff88;
+            transform: translateX(5px);
         }
 
-        .social-icon.bonk {
-            background-image: url('https://cdn.prod.website-files.com/6740d85c4e3daeef29a89470/68433c066e047e6e44c898da_1ed8c36b-4a8e-6394-9e58-9a8c204e7b9e.png');
-            background-size: 85%;
+        .control-button.active {
+            background: rgba(0, 255, 136, 0.2);
+            border-color: #00ff88;
         }
 
-        .social-icon.onlyfans {
-            background-image: url('https://cdn.prod.website-files.com/6740d85c4e3daeef29a89470/6887e9d069c172360a2d3e4c_ChatGPT%20Image%20Jul%2028%2C%202025%2C%2010_21_04%20PM.png');
+        .parameter-slider {
+            margin-bottom: 15px;
         }
 
-        .social-icon:hover {
-            border-color: #00ff00;
-            transform: scale(1.05);
+        .slider-label {
+            color: #8892b0;
+            font-size: 11px;
+            margin-bottom: 5px;
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .slider {
+            width: 100%;
+            height: 4px;
+            border-radius: 2px;
+            background: rgba(136, 146, 176, 0.2);
+            outline: none;
+            appearance: none;
+        }
+
+        .slider::-webkit-slider-thumb {
+            appearance: none;
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: #00ff88;
+            cursor: pointer;
+        }
+
+        /* Performance Monitor */
+        .performance-monitor {
+            position: fixed;
+            right: 20px;
+            top: 100px;
+            width: 200px;
+            background: rgba(0, 0, 0, 0.9);
+            border: 1px solid rgba(0, 255, 136, 0.3);
+            border-radius: 8px;
+            padding: 15px;
+            z-index: 20;
+            backdrop-filter: blur(15px);
+        }
+
+        .monitor-title {
+            color: #00ff88;
+            font-size: 14px;
+            font-weight: bold;
+            margin-bottom: 15px;
+            text-align: center;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .metric {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 8px;
+            font-size: 11px;
+        }
+
+        .metric-label {
+            color: #8892b0;
+        }
+
+        .metric-value {
+            color: #00ff88;
+            font-weight: bold;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 3px;
+            background: rgba(136, 146, 176, 0.2);
+            border-radius: 2px;
+            margin-top: 3px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #00ff88, #00cc6a);
+            border-radius: 2px;
+            transition: width 0.3s ease;
         }
 
         /* Character model */
@@ -680,8 +825,7 @@
             }
         }
     </style>
-</head>
-<body>
+    <body>
     <!-- Grok Loading Screen -->
     <div id="loadingScreen" class="loading-screen">
         <div class="grok-header">
@@ -726,59 +870,111 @@
 
     <!-- Main Content -->
     <div id="mainContent" class="main-content">
+        <!-- Testing Interface Header -->
+        <div class="testing-header">
+            <div class="testing-title">GROK COMPANION - AETHER PROTOCOL</div>
+            <div class="testing-subtitle">Neural Network Testing Environment v2.1.4</div>
+            <div class="testing-status">
+                <span class="status-dot"></span>
+                ACTIVE SESSION
+            </div>
+        </div>
+
+        <!-- Testing Controls Panel -->
+        <div class="testing-controls">
+            <div class="controls-title">TESTING CONTROLS</div>
+            
+            <div class="control-section">
+                <div class="section-label">ANIMATION</div>
+                <button class="control-button" onclick="triggerPose('idle')">IDLE POSE</button>
+                <button class="control-button" onclick="triggerPose('wave')">WAVE GESTURE</button>
+                <button class="control-button" onclick="triggerPose('dance')">ANIMATE SEQUENCE</button>
+                <button class="control-button" onclick="resetCharacter()">RESET POSITION</button>
+            </div>
+
+            <div class="control-section">
+                <div class="section-label">NEURAL PARAMETERS</div>
+                <div class="parameter-slider">
+                    <div class="slider-label">
+                        <span>Response Speed</span>
+                        <span id="speedValue">0.8</span>
+                    </div>
+                    <input type="range" min="0.1" max="2.0" step="0.1" value="0.8" class="slider" id="speedSlider">
+                </div>
+                <div class="parameter-slider">
+                    <div class="slider-label">
+                        <span>Personality Intensity</span>
+                        <span id="intensityValue">0.9</span>
+                    </div>
+                    <input type="range" min="0.1" max="1.0" step="0.1" value="0.9" class="slider" id="intensitySlider">
+                </div>
+            </div>
+
+            <div class="control-section">
+                <div class="section-label">SYSTEM</div>
+                <button class="control-button" onclick="toggleMemory()">TOGGLE MEMORY</button>
+                <button class="control-button" onclick="exportLogs()">EXPORT LOGS</button>
+                <button class="control-button" onclick="emergencyStop()">EMERGENCY STOP</button>
+            </div>
+        </div>
+
+        <!-- Performance Monitor -->
+        <div class="performance-monitor">
+            <div class="monitor-title">PERFORMANCE</div>
+            <div class="metric">
+                <span class="metric-label">CPU Usage:</span>
+                <span class="metric-value" id="cpuUsage">67%</span>
+            </div>
+            <div class="progress-bar">
+                <div class="progress-fill" style="width: 67%"></div>
+            </div>
+            
+            <div class="metric">
+                <span class="metric-label">Memory:</span>
+                <span class="metric-value" id="memoryUsage">2.1GB</span>
+            </div>
+            <div class="progress-bar">
+                <div class="progress-fill" style="width: 84%"></div>
+            </div>
+            
+            <div class="metric">
+                <span class="metric-label">Neural Load:</span>
+                <span class="metric-value" id="neuralLoad">91%</span>
+            </div>
+            <div class="progress-bar">
+                <div class="progress-fill" style="width: 91%"></div>
+            </div>
+            
+            <div class="metric">
+                <span class="metric-label">Responses:</span>
+                <span class="metric-value" id="responseCount">247</span>
+            </div>
+        </div>
+
         <div id="memoryIndicator" class="memory-indicator">
-            Bonkara remembers you!
-        </div>
-
-        <button class="bg-toggle-btn" onclick="toggleBackgroundSelector()" title="Change Background"></button>
-
-        <div id="backgroundSelector" class="background-selector">
-            <div class="bg-selector-title">Choose Background</div>
-            <div class="background-option active" data-bg="default" data-name="Bedroom" 
-                 style="background-image: url('https://cdn.prod.website-files.com/6740d85c4e3daeef29a89470/6887cb12ef6fe7c6ece80324_anime-bedroom-uidy4uvprhbhg84q.jpg')"
-                 onclick="setBackground('default')"></div>
-            <div class="background-option" data-bg="gym" data-name="Gym"
-                 style="background-image: url('https://cdn.prod.website-files.com/6740d85c4e3daeef29a89470/6887f8d1a34ef0893b9b7841_3d179b3d1e4dd193869406730925be71.jpg')"
-                 onclick="setBackground('gym')"></div>
-            <div class="background-option" data-bg="future" data-name="Future Bonk"
-                 style="background-image: url('https://cdn.prod.website-files.com/6740d85c4e3daeef29a89470/6887f8d150076a190352ea5d_1e993a515f75ec9addd4c36eb6a74640%20(1)%20(1).png')"
-                 onclick="setBackground('future')"></div>
-            <div class="background-option" data-bg="streets" data-name="The Streets"
-                 style="background-image: url('https://cdn.prod.website-files.com/6740d85c4e3daeef29a89470/6887f8fbcbc040107d95c8c3_bnef3fhuqm261%20(2).png')"
-                 onclick="setBackground('streets')"></div>
-            <div class="background-option" data-bg="bonk" data-name="Bonk"
-                 style="background-image: url('https://cdn.prod.website-files.com/6740d85c4e3daeef29a89470/6887f9169ce3ce8776ce421c_51lJBZ66FTL.jpg')"
-                 onclick="setBackground('bonk')"></div>
-        </div>
-
-        <div class="background"></div>
-
-        <div class="social-icons left">
-            <div class="social-icon twitter" onclick="window.open('https://twitter.com', '_blank')"></div>
-            <div class="social-icon bonk" onclick="window.open('#', '_blank')"></div>
-            <div class="social-icon onlyfans" onclick="window.open('https://onlyfans.com', '_blank')"></div>
+            Aether remembers you!
         </div>
 
         <div class="character-container">
             <canvas id="characterCanvas" class="character-canvas"></canvas>
             <div id="characterLoading" class="character-loading">
-                <div>Loading Bonkara...</div>
+                <div>Loading Aether...</div>
                 <div class="loading-dots"></div>
             </div>
         </div>
 
         <div class="text-box">
-            <div class="character-name">Bonkara</div>
+            <div class="character-name">Aether</div>
             <div class="dialogue-text" id="dialogueText">
                 <div class="message fairy">
-                    Welcome to my magical realm! I'm Bonkara, and I've been waiting for someone like you to visit. 
-                    The forest spirits whisper that you have questions burning in your heart. What brings you to my domain today?
+                    Neural network initialized. I'm Aether, your advanced AI companion for this testing session. 
+                    All systems are online and ready for interaction. What would you like to explore today?
                 </div>
             </div>
             <div class="input-container">
                 <span class="input-prompt">></span>
-                <input type="text" class="message-input" id="messageInput" placeholder="Type your message..." maxlength="500">
-                <button class="mic-button" id="micButton" onclick="toggleSpeechRecognition()" title="Click to speak"></button>
+                <input type="text" class="message-input" id="messageInput" placeholder="Enter test command or message..." maxlength="500">
+                <button class="mic-button" id="micButton" onclick="toggleSpeechRecognition()" title="Voice Input"></button>
                 <button class="send-button" id="sendButton" onclick="sendMessage()">Send</button>
             </div>
         </div>
@@ -1384,3 +1580,4 @@
     </script>
 </body>
 </html>
+</head>
