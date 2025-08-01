@@ -1047,8 +1047,6 @@
             loadingScreen.classList.add('hidden');
             mainContent.classList.add('visible');
             
-            setBackground(currentBackground);
-            
             if (Object.keys(userMemory).length > 0) {
                 showMemoryIndicator();
             }
@@ -1057,6 +1055,203 @@
             initSoundEffects();
             initSpeechRecognition();
             initThreeJS();
+            initTestingControls();
+        }
+
+        // Testing control functions
+        function initTestingControls() {
+            // Initialize sliders
+            const speedSlider = document.getElementById('speedSlider');
+            const intensitySlider = document.getElementById('intensitySlider');
+            
+            speedSlider.addEventListener('input', function() {
+                document.getElementById('speedValue').textContent = this.value;
+            });
+            
+            intensitySlider.addEventListener('input', function() {
+                document.getElementById('intensityValue').textContent = this.value;
+            });
+            
+            // Start performance monitoring
+            startPerformanceMonitoring();
+        }
+
+        function triggerPose(poseType) {
+            console.log(`Triggering pose: ${poseType}`);
+            // Add visual feedback
+            const buttons = document.querySelectorAll('.control-button');
+            buttons.forEach(btn => btn.classList.remove('active'));
+            event.target.classList.add('active');
+            
+            // Animate character based on pose
+            if (fairy) {
+                switch(poseType) {
+                    case 'idle':
+                        fairy.rotation.y = 0;
+                        break;
+                    case 'wave':
+                        // Simple wave animation
+                        animateWave();
+                        break;
+                    case 'dance':
+                        // Dance animation
+                        animateDance();
+                        break;
+                }
+            }
+            
+            setTimeout(() => {
+                event.target.classList.remove('active');
+            }, 2000);
+        }
+
+        function animateWave() {
+            if (!fairy) return;
+            let startTime = Date.now();
+            function wave() {
+                const elapsed = Date.now() - startTime;
+                if (elapsed < 2000) {
+                    fairy.rotation.z = Math.sin(elapsed / 200) * 0.2;
+                    requestAnimationFrame(wave);
+                } else {
+                    fairy.rotation.z = 0;
+                }
+            }
+            wave();
+        }
+
+        function animateDance() {
+            if (!fairy) return;
+            let startTime = Date.now();
+            function dance() {
+                const elapsed = Date.now() - startTime;
+                if (elapsed < 3000) {
+                    fairy.rotation.y = Math.sin(elapsed / 300) * 0.5;
+                    fairy.position.y = -2.7 + Math.sin(elapsed / 200) * 0.1;
+                    requestAnimationFrame(dance);
+                } else {
+                    fairy.rotation.y = 0;
+                    fairy.position.y = -2.7;
+                }
+            }
+            dance();
+        }
+
+        function resetCharacter() {
+            if (fairy) {
+                fairy.rotation.set(0, 0, 0);
+                fairy.position.set(0, -2.7, 0);
+                fairy.scale.set(2.0, 2.0, 2.0);
+            }
+            
+            // Visual feedback
+            event.target.classList.add('active');
+            setTimeout(() => {
+                event.target.classList.remove('active');
+            }, 1000);
+        }
+
+        function toggleMemory() {
+            // Toggle memory functionality
+            const memoryActive = Object.keys(userMemory).length > 0;
+            if (memoryActive) {
+                localStorage.removeItem('bonkara_memory');
+                userMemory = {};
+                showNotification('Memory cleared');
+            } else {
+                showNotification('Memory system active');
+            }
+            
+            event.target.classList.add('active');
+            setTimeout(() => {
+                event.target.classList.remove('active');
+            }, 1000);
+        }
+
+        function exportLogs() {
+            const logs = {
+                timestamp: new Date().toISOString(),
+                session_data: userMemory,
+                performance: {
+                    responses: document.getElementById('responseCount').textContent,
+                    uptime: Date.now()
+                }
+            };
+            
+            const dataStr = JSON.stringify(logs, null, 2);
+            const dataBlob = new Blob([dataStr], {type: 'application/json'});
+            const url = URL.createObjectURL(dataBlob);
+            
+            const link = document.createElement('a');
+            link.href = url;
+            link.download = 'aether_session_log.json';
+            link.click();
+            
+            event.target.classList.add('active');
+            setTimeout(() => {
+                event.target.classList.remove('active');
+            }, 1000);
+        }
+
+        function emergencyStop() {
+            // Emergency stop functionality
+            if (backgroundMusic) {
+                backgroundMusic.pause();
+            }
+            
+            // Stop all animations
+            if (mixer) {
+                mixer.stopAllAction();
+            }
+            
+            showNotification('EMERGENCY STOP ACTIVATED');
+            
+            event.target.classList.add('active');
+            setTimeout(() => {
+                event.target.classList.remove('active');
+            }, 2000);
+        }
+
+        function showNotification(message) {
+            const notification = document.createElement('div');
+            notification.style.cssText = `
+                position: fixed;
+                top: 50%;
+                left: 50%;
+                transform: translate(-50%, -50%);
+                background: rgba(0, 255, 136, 0.9);
+                color: black;
+                padding: 10px 20px;
+                border-radius: 5px;
+                font-weight: bold;
+                z-index: 1000;
+                animation: fadeInOut 2s ease;
+            `;
+            notification.textContent = message;
+            document.body.appendChild(notification);
+            
+            setTimeout(() => {
+                notification.remove();
+            }, 2000);
+        }
+
+        function startPerformanceMonitoring() {
+            setInterval(() => {
+                // Simulate performance metrics
+                const cpu = Math.floor(Math.random() * 30) + 50;
+                const memory = (Math.random() * 1 + 1.5).toFixed(1);
+                const neural = Math.floor(Math.random() * 20) + 80;
+                
+                document.getElementById('cpuUsage').textContent = cpu + '%';
+                document.getElementById('memoryUsage').textContent = memory + 'GB';
+                document.getElementById('neuralLoad').textContent = neural + '%';
+                
+                // Update progress bars
+                const progressBars = document.querySelectorAll('.progress-fill');
+                progressBars[0].style.width = cpu + '%';
+                progressBars[1].style.width = (memory / 4 * 100) + '%';
+                progressBars[2].style.width = neural + '%';
+            }, 2000);
         }
 
         function updateUserMemory(key, value) {
